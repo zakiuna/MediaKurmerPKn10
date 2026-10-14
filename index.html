@@ -45,6 +45,44 @@
   .level-info .stars { font-size:12px; margin-top:4px; color:#ffd700; }
   .lock-icon { font-size:20px; }
 
+  /* ===== MATERI SCREEN ===== */
+  .materi-screen { flex:1; padding:16px; display:flex; flex-direction:column; }
+  .materi-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; gap:10px; }
+  .materi-badge { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(255,215,0,0.15); border:1px solid #ffd700; border-radius:20px; font-size:11px; color:#ffd700; font-weight:bold; }
+  .materi-scroll { flex:1; overflow-y:auto; padding-bottom:100px; }
+  .materi-hero { text-align:center; padding:20px 16px; margin-bottom:16px; background:linear-gradient(135deg,rgba(255,215,0,0.12),rgba(255,140,0,0.06)); border:2px solid rgba(255,215,0,0.3); border-radius:18px; }
+  .materi-hero .icon { font-size:56px; margin-bottom:8px; }
+  .materi-hero h2 { font-size:18px; color:#ffd700; margin-bottom:4px; line-height:1.3; }
+  .materi-hero .sub { font-size:11px; color:#ccc; }
+
+  .materi-tip { background:linear-gradient(135deg,rgba(46,204,113,0.15),rgba(39,174,96,0.08)); border:1px solid rgba(46,204,113,0.4); border-radius:12px; padding:14px; font-size:13px; color:#d4f5e0; margin-bottom:16px; line-height:1.65; }
+  .materi-tip b { color:#a8e6c1; }
+
+  .materi-section { background:rgba(255,255,255,0.05); border-radius:14px; padding:16px; margin-bottom:14px; border-left:4px solid #ffd700; }
+  .materi-section h3 { font-size:15px; color:#ffd700; margin-bottom:12px; display:flex; align-items:center; gap:8px; line-height:1.35; }
+  .materi-section h3 .num { width:26px; height:26px; border-radius:50%; background:#ffd700; color:#000; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold; flex-shrink:0; }
+  .materi-section .body { font-size:13.5px; line-height:1.75; color:#e8e8e8; }
+  .materi-section .body p { margin-bottom:10px; }
+  .materi-section .body p:last-child { margin-bottom:0; }
+  .materi-section .body b { color:#ffd700; }
+  .materi-section .body ul { list-style:none; padding-left:0; margin:8px 0; }
+  .materi-section .body ul li { padding:5px 0 5px 22px; position:relative; }
+  .materi-section .body ul li::before { content:'▸'; position:absolute; left:6px; color:#ffd700; font-weight:bold; }
+  .materi-section .body ol { padding-left:22px; margin:8px 0; }
+  .materi-section .body ol li { padding:4px 0; }
+  .materi-section .body .box { background:rgba(255,215,0,0.1); border-radius:8px; padding:10px 12px; margin:10px 0; border-left:3px solid #ffd700; font-size:13px; }
+  .materi-section .body .box.green { background:rgba(46,204,113,0.1); border-left-color:#2ecc71; }
+  .materi-section .body .box.red { background:rgba(231,76,60,0.1); border-left-color:#e74c3c; }
+  .materi-section .body .box.blue { background:rgba(0,119,182,0.12); border-left-color:#0077b6; }
+  .materi-section .body .box b { display:inline-block; margin-bottom:4px; }
+
+  .materi-highlight { background:linear-gradient(135deg,rgba(46,204,113,0.18),rgba(39,174,96,0.08)); border:1px solid rgba(46,204,113,0.5); border-radius:12px; padding:14px; font-size:13px; color:#d4f5e0; line-height:1.7; margin-bottom:16px; }
+  .materi-highlight b { color:#fff; }
+
+  .btn-start-quiz { position:sticky; bottom:0; margin:16px auto 0; display:block; width:100%; max-width:380px; padding:18px; border:none; border-radius:30px; font-size:16px; font-weight:bold; color:#000; background:linear-gradient(135deg,#ffd700,#ff8c00); box-shadow:0 8px 24px rgba(255,215,0,0.5); cursor:pointer; transition:transform .15s; }
+  .btn-start-quiz:active { transform:scale(.97); }
+
+  /* ===== QUIZ ===== */
   .quiz-screen { flex:1; padding:16px; display:flex; flex-direction:column; }
   .quiz-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:8px; }
   .btn-back { background:rgba(255,255,255,0.1); border:none; color:#fff; padding:8px 14px; border-radius:10px; font-size:13px; cursor:pointer; }
@@ -137,6 +175,15 @@
     <div class="level-list" id="levelList"></div>
   </div>
 
+  <div class="materi-screen hidden" id="materiScreen">
+    <div class="materi-top">
+      <button class="btn-back" id="btnMateriBack">← Kembali</button>
+      <div class="materi-badge" id="materiBadge">📖 Materi</div>
+    </div>
+    <div class="materi-scroll" id="materiScroll"></div>
+    <button class="btn-start-quiz" id="btnStartQuiz">▶ Mulai Kuis (10 Soal)</button>
+  </div>
+
   <div class="quiz-screen hidden" id="quizScreen">
     <div class="quiz-top">
       <button class="btn-back" id="btnBack">← Kembali</button>
@@ -179,109 +226,546 @@
 <script>
 /* ============================================================
    DATA MATERI PKN KELAS 10 KURIKULUM MERDEKA - 2 SEMESTER
+   Materi diperluas: setiap bagian memiliki penjelasan detail,
+   contoh, dan kotak informasi tambahan.
    ============================================================ */
 const MATERI = {
   /* ============ SEMESTER 1 ============ */
-  1: { semester:1, bab:"BAB 1", nama:"Pancasila sebagai Pemersatu Bangsa", icon:"🦅", soal:[
-    { q:"Pancasila sebagai dasar negara Indonesia pertama kali dirumuskan oleh...", o:["Soekarno","Moh. Yamin","Soepomo","BPUPKI"], a:0, e:"Ir. Soekarno menyampaikan gagasan dasar negara pada sidang BPUPKI 1 Juni 1945." },
-    { q:"Sidang BPUPKI pertama dilaksanakan pada tanggal...", o:["29 Mei - 1 Juni 1945","10 - 17 Juli 1945","17 Agustus 1945","1 Oktober 1945"], a:0, e:"Sidang pertama BPUPKI berlangsung 29 Mei hingga 1 Juni 1945." },
-    { q:"Nilai-nilai Pancasila yang bersumber pada hakikat manusia sebagai makhluk Tuhan disebut nilai...", o:["Material","Vital","Spiritual","Kerohanian"], a:2, e:"Nilai spiritual bersumber pada hakikat manusia sebagai makhluk Tuhan." },
-    { q:"Sila ke-3 Pancasila dilambangkan dengan...", o:["Bintang","Rantai","Pohon Beringin","Kepala Banteng"], a:2, e:"Sila ke-3 'Persatuan Indonesia' dilambangkan Pohon Beringin." },
-    { q:"Pancasila sebagai ideologi terbuka memiliki ciri...", o:["Bersifat tertutup","Kaku dan statis","Dinamis dan fleksibel","Tidak dapat diubah"], a:2, e:"Ideologi terbuka bersifat dinamis, fleksibel, dan berkembang." },
-    { q:"Fungsi Pancasila sebagai pandangan hidup bangsa berarti...", o:["Alat pemersatu","Pedoman hidup sehari-hari","Dasar hukum","Sumber hukum"], a:1, e:"Sebagai pandangan hidup, Pancasila jadi pedoman perilaku sehari-hari." },
-    { q:"Piagam Jakarta disahkan pada tanggal...", o:["22 Juni 1945","1 Juni 1945","17 Juli 1945","18 Agustus 1945"], a:0, e:"Piagam Jakarta disepakati pada 22 Juni 1945." },
-    { q:"Sila ke-5 Pancasila mengandung nilai...", o:["Ketuhanan","Kemanusiaan","Persatuan","Keadilan sosial"], a:3, e:"Sila ke-5: Keadilan sosial bagi seluruh rakyat Indonesia." },
-    { q:"BPUPKI dibentuk oleh pemerintah Jepang pada tanggal...", o:["1 Maret 1945","29 April 1945","7 Agustus 1945","17 Agustus 1945"], a:0, e:"BPUPKI dibentuk 1 Maret 1945 oleh Jepang." },
-    { q:"Pancasila sebagai dasar negara tercantum dalam Pembukaan UUD 1945 alinea...", o:["Pertama","Kedua","Ketiga","Keempat"], a:3, e:"Pancasila tercantum pada alinea keempat Pembukaan UUD 1945." }
-  ]},
+  1: { semester:1, bab:"BAB 1", nama:"Pancasila sebagai Pemersatu Bangsa", icon:"🦅",
+    materi: {
+      pengantar: "Pancasila adalah <b>dasar negara</b> dan <b>ideologi bangsa</b> Indonesia yang menjadi landasan seluruh kehidupan bermasyarakat, berbangsa, dan bernegara. Sebagai pemersatu, Pancasila mampu menyatukan keberagaman suku, agama, ras, dan budaya di Indonesia. Tanpa Pancasila, bangsa Indonesia yang sangat majemuk ini rentan terpecah-belah.",
+      bagian: [
+        { judul:"A. Sejarah Perumusan Pancasila", body:`
+          <p>Pancasila tidak lahir secara tiba-tiba, melainkan melalui proses panjang yang melibatkan banyak tokoh bangsa. Rangkaian peristiwa pentingnya adalah sebagai berikut:</p>
+          <p><b>1. Pembentukan BPUPKI (1 Maret 1945)</b><br>Jepang yang mulai terdesak dalam Perang Asia Pasifik berjanji memberi kemerdekaan kepada Indonesia. Pada <b>1 Maret 1945</b>, Jepang membentuk <b>BPUPKI</b> (Badan Penyelidik Usaha-usaha Persiapan Kemerdekaan Indonesia) atau <i>Dokuritsu Junbi Cosakai</i>, diketuai oleh <b>Dr. KRT Radjiman Wedyodiningrat</b>.</p>
+          <p><b>2. Sidang BPUPKI Pertama (29 Mei – 1 Juni 1945)</b><br>Sidang ini membahas <b>dasar negara</b> Indonesia. Tiga tokoh menyampaikan usulan:</p>
+          <ul>
+            <li><b>Moh. Yamin (29 Mei 1945)</b> — mengusulkan 5 asas: Peri Kebangsaan, Peri Kemanusiaan, Peri Ketuhanan, Peri Kerakyatan, dan Kesejahteraan Rakyat.</li>
+            <li><b>Mr. Soepomo (31 Mei 1945)</b> — mengusulkan dasar negara yang bersifat <i>integralistik</i> berdasarkan kekeluargaan dan musyawarah.</li>
+            <li><b>Ir. Soekarno (1 Juni 1945)</b> — mengusulkan nama "<b>Pancasila</b>" dengan 5 sila: Kebangsaan Indonesia, Internasionalisme atau Peri Kemanusiaan, Mufakat atau Demokrasi, Kesejahteraan Sosial, dan Ketuhanan yang Berkebudayaan.</li>
+          </ul>
+          <div class="box blue"><b>📅 Tanggal Bersejarah:</b> 1 Juni 1945 diperingati sebagai <b>Hari Lahirnya Pancasila</b>, karena pada tanggal itu Ir. Soekarno pertama kali menyebut nama "Pancasila".</div>
+          <p><b>3. Piagam Jakarta (22 Juni 1945)</b><br>Panitia Sembilan (9 tokoh) menyusun naskah pembukaan hukum dasar yang disebut <b>Piagam Jakarta</b>. Di dalamnya terdapat rumusan Pancasila dengan sila pertama berbunyi "<i>Ketuhanan dengan kewajiban menjalankan syariat Islam bagi pemeluk-pemeluknya</i>".</p>
+          <p><b>4. Pengesahan Pancasila (18 Agustus 1945)</b><br>Sehari setelah Proklamasi, PPKI mengesahkan UUD 1945 dan Pancasila sebagai dasar negara. Sila pertama diubah menjadi "<b>Ketuhanan Yang Maha Esa</b>" demi menjaga persatuan seluruh rakyat Indonesia.</p>
+        `},
+        { judul:"B. Nilai-Nilai yang Terkandung dalam Pancasila", body:`
+          <p>Setiap sila Pancasila mengandung nilai yang saling berkaitan. Menurut <b>Notonagoro</b>, nilai Pancasila dibagi menjadi tiga tingkatan:</p>
+          <ul>
+            <li><b>Nilai Material</b> — segala sesuatu yang berguna bagi jasmani manusia.</li>
+            <li><b>Nilai Vital</b> — segala sesuatu yang berguna bagi manusia untuk melakukan aktivitas.</li>
+            <li><b>Nilai Kerohanian</b> — segala sesuatu yang berguna bagi rohani manusia, meliputi: nilai kebenaran (akal), nilai keindahan (estetis), nilai moral (kebaikan), dan <b>nilai religius</b> (ketuhanan) — inilah nilai tertinggi.</li>
+          </ul>
+          <p>Pengamalan nilai tiap sila:</p>
+          <ul>
+            <li><b>Sila 1 — Ketuhanan Yang Maha Esa:</b> percaya dan taqwa kepada Tuhan, menghormati pemeluk agama lain, tidak memaksakan agama.</li>
+            <li><b>Sila 2 — Kemanusiaan yang Adil dan Beradab:</b> mengakui persamaan derajat, mencintai sesama manusia, menjunjung tinggi HAM.</li>
+            <li><b>Sila 3 — Persatuan Indonesia:</b> cinta tanah air, rela berkorban, mengutamakan persatuan di atas kepentingan pribadi.</li>
+            <li><b>Sila 4 — Kerakyatan yang Dipimpin oleh Hikmat Kebijaksanaan dalam Permusyawaratan/Perwakilan:</b> mengutamakan musyawarah, tidak memaksakan kehendak, menghargai pendapat orang lain.</li>
+            <li><b>Sila 5 — Keadilan Sosial bagi Seluruh Rakyat Indonesia:</b> bersikap adil, menghargai hasil karya orang lain, suka bekerja keras.</li>
+          </ul>
+        `},
+        { judul:"C. Fungsi dan Peran Pancasila", body:`
+          <p>Pancasila memiliki beberapa fungsi utama dalam kehidupan berbangsa dan bernegara:</p>
+          <ol>
+            <li><b>Sebagai Dasar Negara</b> — menjadi fondasi seluruh peraturan hukum di Indonesia. Semua UU, PP, dan Perda tidak boleh bertentangan dengan Pancasila.</li>
+            <li><b>Sebagai Pandangan Hidup Bangsa</b> — menjadi pedoman perilaku sehari-hari dalam bermasyarakat.</li>
+            <li><b>Sebagai Ideologi Negara</b> — Pancasila bersifat <b>ideologi terbuka</b>, artinya nilai-nilainya bersifat dinamis, fleksibel, dan dapat dikembangkan sesuai zaman, tetapi tidak boleh menyimpang dari nilai dasarnya.</li>
+            <li><b>Sebagai Jiwa Bangsa</b> — mencerminkan kepribadian dan identitas bangsa Indonesia.</li>
+            <li><b>Sebagai Sumber Hukum</b> — segala sumber hukum di Indonesia bersumber pada Pancasila.</li>
+          </ol>
+          <div class="box"><b>Perbedaan Ideologi Terbuka & Tertutup:</b><br>• <b>Terbuka</b>: dinamis, menerima perkembangan zaman, contoh: Pancasila.<br>• <b>Tertutup</b>: kaku, tidak dapat diubah, contoh: Marxisme-Leninisme.</div>
+        `},
+        { judul:"D. Pancasila sebagai Pemersatu Bangsa", body:`
+          <p>Indonesia memiliki <b>1.340 suku bangsa</b>, <b>700+ bahasa daerah</b>, dan 6 agama yang diakui. Keberagaman ini bisa menjadi kekuatan, tetapi juga berpotensi menimbulkan konflik. Di sinilah peran Pancasila sebagai perekat bangsa.</p>
+          <p>Pancasila menyatukan karena:</p>
+          <ul>
+            <li>Nilai ketuhanan mengajarkan toleransi antarumat beragama.</li>
+            <li>Nilai kemanusiaan mendorong sikap saling menghormati.</li>
+            <li>Nilai persatuan menempatkan kepentingan bangsa di atas kelompok.</li>
+            <li>Nilai musyawarah menyelesaikan perbedaan dengan dialog.</li>
+            <li>Nilai keadilan memastikan semua warga diperlakukan adil.</li>
+          </ul>
+          <p>Contoh nyata pengamalan sebagai pemersatu:</p>
+          <ul>
+            <li>Gotong royong membangun jembatan desa tanpa memandang suku.</li>
+            <li>Membantu korban bencana alam di daerah berbeda agama.</li>
+            <li>Musyawarah RT yang melibatkan semua warga.</li>
+            <li>Menghormati tetangga yang merayakan hari raya agamanya.</li>
+          </ul>
+          <div class="box green"><b>💚 Refleksi:</b> Jika setiap warga mengamalkan Pancasila, persatuan Indonesia akan kokoh. Kita tidak perlu menyeragamkan semua hal — justru dengan menghargai perbedaan, Pancasila menjadi indah dan bermakna.</div>
+        `}
+      ],
+      highlight: "💡 <b>Rangkuman:</b> Pancasila dirumuskan melalui BPUPKI, lahir 1 Juni 1945 (nama dari Ir. Soekarno), disahkan 18 Agustus 1945. Berfungsi sebagai dasar negara, pandangan hidup, ideologi terbuka, dan jiwa bangsa. Nilai-nilainya mempersatukan keberagaman Indonesia."
+    },
+    soal:[
+      { q:"Pancasila sebagai dasar negara Indonesia pertama kali dirumuskan oleh...", o:["Soekarno","Moh. Yamin","Soepomo","BPUPKI"], a:0, e:"Ir. Soekarno menyampaikan gagasan dasar negara pada sidang BPUPKI 1 Juni 1945." },
+      { q:"Sidang BPUPKI pertama dilaksanakan pada tanggal...", o:["29 Mei - 1 Juni 1945","10 - 17 Juli 1945","17 Agustus 1945","1 Oktober 1945"], a:0, e:"Sidang pertama BPUPKI berlangsung 29 Mei hingga 1 Juni 1945." },
+      { q:"Nilai-nilai Pancasila yang bersumber pada hakikat manusia sebagai makhluk Tuhan disebut nilai...", o:["Material","Vital","Spiritual","Kerohanian"], a:2, e:"Nilai spiritual bersumber pada hakikat manusia sebagai makhluk Tuhan." },
+      { q:"Sila ke-3 Pancasila dilambangkan dengan...", o:["Bintang","Rantai","Pohon Beringin","Kepala Banteng"], a:2, e:"Sila ke-3 'Persatuan Indonesia' dilambangkan Pohon Beringin." },
+      { q:"Pancasila sebagai ideologi terbuka memiliki ciri...", o:["Bersifat tertutup","Kaku dan statis","Dinamis dan fleksibel","Tidak dapat diubah"], a:2, e:"Ideologi terbuka bersifat dinamis, fleksibel, dan berkembang." },
+      { q:"Fungsi Pancasila sebagai pandangan hidup bangsa berarti...", o:["Alat pemersatu","Pedoman hidup sehari-hari","Dasar hukum","Sumber hukum"], a:1, e:"Sebagai pandangan hidup, Pancasila jadi pedoman perilaku sehari-hari." },
+      { q:"Piagam Jakarta disahkan pada tanggal...", o:["22 Juni 1945","1 Juni 1945","17 Juli 1945","18 Agustus 1945"], a:0, e:"Piagam Jakarta disepakati pada 22 Juni 1945 oleh Panitia Sembilan." },
+      { q:"Sila ke-5 Pancasila mengandung nilai...", o:["Ketuhanan","Kemanusiaan","Persatuan","Keadilan sosial"], a:3, e:"Sila ke-5: Keadilan sosial bagi seluruh rakyat Indonesia." },
+      { q:"BPUPKI dibentuk oleh pemerintah Jepang pada tanggal...", o:["1 Maret 1945","29 April 1945","7 Agustus 1945","17 Agustus 1945"], a:0, e:"BPUPKI dibentuk 1 Maret 1945 oleh Jepang, diketuai Dr. Radjiman." },
+      { q:"Pancasila sebagai dasar negara tercantum dalam Pembukaan UUD 1945 alinea...", o:["Pertama","Kedua","Ketiga","Keempat"], a:3, e:"Pancasila tercantum pada alinea keempat Pembukaan UUD 1945." }
+    ]
+  },
 
-  2: { semester:1, bab:"BAB 2", nama:"UUD NRI Tahun 1945", icon:"📜", soal:[
-    { q:"UUD NRI Tahun 1945 disahkan pada tanggal...", o:["17 Agustus 1945","18 Agustus 1945","1 Juni 1945","22 Juni 1945"], a:1, e:"UUD 1945 disahkan PPKI pada 18 Agustus 1945." },
-    { q:"Sifat UUD NRI 1945 menurut Miriam Budiardjo adalah...", o:["Kaku","Fleksibel","Rigid dan fleksibel","Statis"], a:2, e:"UUD 1945 bersifat rigid (kaku) dan fleksibel." },
-    { q:"Amandemen UUD 1945 telah dilakukan sebanyak...", o:["2 kali","3 kali","4 kali","5 kali"], a:2, e:"Amandemen UUD 1945 dilakukan 4 kali (1999-2002)." },
-    { q:"Lembaga yang berwenang mengubah UUD adalah...", o:["DPR","MPR","Presiden","MA"], a:1, e:"MPR berwenang mengubah dan menetapkan UUD." },
-    { q:"Pasal 1 ayat (1) UUD 1945 menyatakan Indonesia adalah negara...", o:["Serikat","Kesatuan","Federal","Republik"], a:1, e:"Negara Kesatuan Republik Indonesia (NKRI)." },
-    { q:"Tujuan negara Indonesia tercantum dalam Pembukaan UUD 1945 alinea...", o:["Pertama","Kedua","Ketiga","Keempat"], a:3, e:"Tujuan negara ada pada alinea keempat." },
-    { q:"Sebelum amandemen, UUD 1945 terdiri atas...", o:["Pembukaan, Batang Tubuh, Penjelasan","Pasal dan Ayat","Batang Tubuh saja","Pembukaan saja"], a:0, e:"Pembukaan, Batang Tubuh, dan Penjelasan." },
-    { q:"Lembaga negara yang memegang kekuasaan yudikatif adalah...", o:["DPR","Presiden","MA","MPR"], a:2, e:"Kekuasaan yudikatif dipegang Mahkamah Agung dan badan peradilan." },
-    { q:"Sistem pemerintahan Indonesia menganut...", o:["Presidensial","Parlementer","Campuran","Liberal"], a:0, e:"Indonesia menganut sistem pemerintahan presidensial." },
-    { q:"Pasal 27 ayat (1) UUD 1945 mengatur tentang...", o:["Kebebasan beragama","Persamaan kedudukan di hukum","Hak pendidikan","Hak memilih"], a:1, e:"Segala warga negara bersamaan kedudukannya di dalam hukum." }
-  ]},
+  2: { semester:1, bab:"BAB 2", nama:"UUD NRI Tahun 1945", icon:"📜",
+    materi: {
+      pengantar: "Undang-Undang Dasar Negara Republik Indonesia Tahun 1945 (UUD NRI 1945) adalah <b>hukum dasar tertulis</b> yang menjadi sumber hukum tertinggi di Indonesia. UUD 1945 menjadi pedoman dalam penyelenggaraan negara, membatasi kekuasaan pemerintah, dan menjamin hak-hak warga negara.",
+      bagian: [
+        { judul:"A. Sejarah dan Kedudukan UUD 1945", body:`
+          <p>UUD 1945 dirancang oleh <b>BPUPKI</b> dan disahkan oleh <b>PPKI</b> pada <b>18 Agustus 1945</b>, sehari setelah Proklamasi Kemerdekaan. Naskah UUD 1945 disusun oleh tim kecil yang dipimpin <b>Mr. Soepomo</b>, dengan anggota <b>Ir. Soekarno</b> dan <b>Mr. Moh. Hatta</b>.</p>
+          <p><b>Kedudukan UUD 1945:</b></p>
+          <ul>
+            <li>Merupakan <b>hukum dasar</b> tertinggi — semua peraturan di bawahnya tidak boleh bertentangan.</li>
+            <li>Menjadi <b>sumber hukum</b> bagi seluruh peraturan perundang-undangan.</li>
+            <li>Merupakan <b>alat kontrol</b> terhadap penyelenggaraan kekuasaan negara.</li>
+            <li>Menjadi <b>pedoman</b> dalam penyelenggaraan pemerintahan.</li>
+          </ul>
+          <div class="box blue"><b>Struktur UUD 1945 Sebelum Amandemen:</b><br>• <b>Pembukaan</b> (4 alinea)<br>• <b>Batang Tubuh</b> (16 bab, 37 pasal, 65 ayat)<br>• <b>Aturan Peralihan</b> (4 pasal)<br>• <b>Aturan Tambahan</b> (2 ayat)<br>• <b>Penjelasan</b> (umum dan pasal demi pasal)</div>
+        `},
+        { judul:"B. Sifat UUD 1945", body:`
+          <p>Menurut ahli tata negara <b>Prof. Miriam Budiardjo</b>, UUD 1945 memiliki dua sifat:</p>
+          <p><b>1. Rigid (Kaku)</b><br>UUD 1945 bersifat kaku karena <b>tidak dapat diubah dengan cara biasa</b>. Untuk mengubahnya diperlukan prosedur khusus sesuai <b>Pasal 37</b>, yaitu:</p>
+          <ol>
+            <li>Diusulkan oleh minimal 1/3 anggota MPR.</li>
+            <li>Dihadiri minimal 2/3 anggota MPR.</li>
+            <li>Disetujui minimal 50% + 1 anggota MPR.</li>
+            <li>Khusus perubahan Pasal 37, harus disetujui 2/3 anggota MPR.</li>
+          </ol>
+          <p><b>2. Fleksibel</b><br>Meskipun kaku, UUD 1945 bersifat fleksibel karena dapat <b>disesuaikan dengan perkembangan zaman</b> melalui:</p>
+          <ul>
+            <li>Amandemen (perubahan resmi).</li>
+            <li>Konvensi (kebiasaan ketatanegaraan).</li>
+            <li>Penafsiran oleh Mahkamah Konstitusi.</li>
+          </ul>
+        `},
+        { judul:"C. Amandemen UUD 1945", body:`
+          <p>Setelah reformasi 1998, UUD 1945 telah diamandemen <b>4 kali</b> oleh MPR:</p>
+          <ul>
+            <li><b>Amandemen I — 19 Oktober 1999</b>: membatasi kekuasaan Presiden (2 periode), memperkuat DPR.</li>
+            <li><b>Amandemen II — 18 Agustus 2000</b>: memperluas HAM, otonomi daerah, pemilihan Presiden langsung.</li>
+            <li><b>Amandemen III — 9 November 2001</b>: membentuk Mahkamah Konstitusi, pemilu langsung Presiden.</li>
+            <li><b>Amandemen IV — 10 Agustus 2002</b>: menyempurnakan sistem ketatanegaraan, penghapusan DPA, pemilu legislatif.</li>
+          </ul>
+          <p><b>Tujuan amandemen:</b></p>
+          <ul>
+            <li>Menyempurnakan aturan dasar negara agar sesuai tuntutan reformasi.</li>
+            <li>Membatasi dan mengawasi kekuasaan negara.</li>
+            <li>Memperkuat hak asasi manusia.</li>
+            <li>Mewujudkan kedaulatan rakyat dan demokrasi.</li>
+          </ul>
+          <div class="box"><b>Setelah Amandemen:</b> UUD 1945 menjadi lebih lengkap — terdiri dari Pembukaan, 21 bab, 73 pasal, 170 ayat, 3 pasal aturan peralihan, dan 2 pasal aturan tambahan. <b>Penjelasan UUD 1945 dihapus</b> karena dianggap duplikatif.</div>
+        `},
+        { judul:"D. Struktur dan Sistem Pemerintahan", body:`
+          <p><b>Struktur UUD 1945:</b></p>
+          <ul>
+            <li><b>Pembukaan</b> — memuat tujuan negara dan dasar negara (Pancasila).</li>
+            <li><b>Batang Tubuh</b> — memuat pasal-pasal tentang lembaga negara, hak warga, dll.</li>
+            <li><b>Aturan Peralihan & Tambahan</b> — memuat aturan perpindahan kekuasaan.</li>
+          </ul>
+          <p><b>Lembaga-lembaga negara menurut UUD 1945:</b></p>
+          <ul>
+            <li><b>MPR</b> — mengubah UUD, melantik Presiden.</li>
+            <li><b>DPR</b> — membuat UU, mengawasi pemerintah (legislatif).</li>
+            <li><b>Presiden</b> — menjalankan pemerintahan (eksekutif).</li>
+            <li><b>MA & MK</b> — kekuasaan kehakiman (yudikatif).</li>
+            <li><b>BPK</b> — memeriksa keuangan negara.</li>
+            <li><b>DPD</b> — mewakili daerah.</li>
+          </ul>
+          <p><b>Sistem pemerintahan Indonesia adalah Presidensial</b>, yaitu:</p>
+          <ul>
+            <li>Presiden adalah kepala negara sekaligus kepala pemerintahan.</li>
+            <li>Presiden dan DPR dipilih langsung oleh rakyat melalui pemilu.</li>
+            <li>Menteri diangkat dan bertanggung jawab kepada Presiden.</li>
+            <li>Presiden tidak dapat dibubarkan oleh DPR (kecuali impeachment).</li>
+          </ul>
+          <div class="box blue"><b>Pasal Penting:</b><br>• <b>Pasal 1 ayat (1)</b>: negara kesatuan berbentuk republik.<br>• <b>Pasal 1 ayat (2)</b>: kedaulatan di tangan rakyat.<br>• <b>Pasal 27 ayat (1)</b>: persamaan kedudukan di hukum.<br>• <b>Pasal 30</b>: pertahanan & keamanan negara.</div>
+        `}
+      ],
+      highlight: "💡 <b>Rangkuman:</b> UUD 1945 disahkan 18 Agustus 1945 oleh PPKI. Bersifat rigid dan fleksibel. Telah diamandemen 4 kali (1999-2002) oleh MPR. Sistem pemerintahan Indonesia adalah presidensial. UUD 1945 menjadi hukum dasar tertinggi dan alat kontrol kekuasaan negara."
+    },
+    soal:[
+      { q:"UUD NRI Tahun 1945 disahkan pada tanggal...", o:["17 Agustus 1945","18 Agustus 1945","1 Juni 1945","22 Juni 1945"], a:1, e:"UUD 1945 disahkan PPKI pada 18 Agustus 1945." },
+      { q:"Sifat UUD NRI 1945 menurut Miriam Budiardjo adalah...", o:["Kaku","Fleksibel","Rigid dan fleksibel","Statis"], a:2, e:"UUD 1945 bersifat rigid (kaku) dan fleksibel." },
+      { q:"Amandemen UUD 1945 telah dilakukan sebanyak...", o:["2 kali","3 kali","4 kali","5 kali"], a:2, e:"Amandemen UUD 1945 dilakukan 4 kali (1999-2002)." },
+      { q:"Lembaga yang berwenang mengubah UUD adalah...", o:["DPR","MPR","Presiden","MA"], a:1, e:"MPR berwenang mengubah dan menetapkan UUD." },
+      { q:"Pasal 1 ayat (1) UUD 1945 menyatakan Indonesia adalah negara...", o:["Serikat","Kesatuan","Federal","Republik"], a:1, e:"Negara Kesatuan Republik Indonesia (NKRI)." },
+      { q:"Tujuan negara Indonesia tercantum dalam Pembukaan UUD 1945 alinea...", o:["Pertama","Kedua","Ketiga","Keempat"], a:3, e:"Tujuan negara ada pada alinea keempat." },
+      { q:"Sebelum amandemen, UUD 1945 terdiri atas...", o:["Pembukaan, Batang Tubuh, Penjelasan","Pasal dan Ayat","Batang Tubuh saja","Pembukaan saja"], a:0, e:"Pembukaan, Batang Tubuh, dan Penjelasan." },
+      { q:"Lembaga negara yang memegang kekuasaan yudikatif adalah...", o:["DPR","Presiden","MA","MPR"], a:2, e:"Kekuasaan yudikatif dipegang Mahkamah Agung dan badan peradilan." },
+      { q:"Sistem pemerintahan Indonesia menganut...", o:["Presidensial","Parlementer","Campuran","Liberal"], a:0, e:"Indonesia menganut sistem pemerintahan presidensial." },
+      { q:"Pasal 27 ayat (1) UUD 1945 mengatur tentang...", o:["Kebebasan beragama","Persamaan kedudukan di hukum","Hak pendidikan","Hak memilih"], a:1, e:"Segala warga negara bersamaan kedudukannya di dalam hukum." }
+    ]
+  },
 
-  3: { semester:1, bab:"BAB 3", nama:"Tata Urutan Peraturan Perundang-undangan", icon:"⚖️", soal:[
-    { q:"Hierarki peraturan perundang-undangan tertinggi di Indonesia adalah...", o:["UUD 1945","TAP MPR","UU","Perpres"], a:0, e:"UUD NRI 1945 adalah hukum dasar tertinggi." },
-    { q:"UU No. 12 Tahun 2011 mengatur tentang...", o:["Pemilu","Pembentukan Peraturan Perundang-undangan","HAM","Korupsi"], a:1, e:"UU No. 12/2011 tentang Pembentukan Peraturan Perundang-undangan." },
-    { q:"Peraturan yang dibuat Presiden untuk melaksanakan UU disebut...", o:["Perpres","Perda","Perppu","Kepres"], a:0, e:"Peraturan Presiden (Perpres) dibuat untuk menjalankan UU." },
-    { q:"Peraturan Daerah (Perda) ditetapkan oleh...", o:["Gubernur","DPRD dengan persetujuan Kepala Daerah","Menteri","Presiden"], a:1, e:"Perda ditetapkan DPRD dengan persetujuan Kepala Daerah." },
-    { q:"Perppu adalah singkatan dari...", o:["Peraturan Pemerintah Pusat","Peraturan Presiden","Peraturan Pemerintah Pengganti Undang-Undang","Peraturan Pemerintah"], a:2, e:"Perppu = Peraturan Pemerintah Pengganti Undang-Undang." },
-    { q:"Tata urutan perundang-undangan diatur dalam UU No...", o:["10 Tahun 2004","12 Tahun 2011","17 Tahun 2014","22 Tahun 1999"], a:1, e:"UU No. 12 Tahun 2011 tentang Pembentukan Peraturan Perundang-undangan." },
-    { q:"Peraturan Pemerintah ditetapkan oleh...", o:["DPR","Presiden","MPR","MA"], a:1, e:"Peraturan Pemerintah ditetapkan oleh Presiden." },
-    { q:"Asas perundang-undangan yang berarti dapat dilaksanakan adalah...", o:["Lex superior","Lex specialis","Lex posterior","Dapat dilaksanakan"], a:3, e:"Asas dapat dilaksanakan (dapat diterapkan dalam praktik)." },
-    { q:"Peraturan lebih rendah tidak boleh bertentangan dengan yang lebih tinggi merupakan asas...", o:["Lex superior derogat legi inferiori","Lex specialis","Lex posterior","Lex aequo"], a:0, e:"Asas lex superior: peraturan lebih tinggi mengalahkan yang lebih rendah." },
-    { q:"TAP MPR termasuk dalam hierarki perundang-undangan di bawah...", o:["UUD 1945","UU","Perpres","Perda"], a:0, e:"TAP MPR berada tepat di bawah UUD 1945." }
-  ]},
+  3: { semester:1, bab:"BAB 3", nama:"Tata Urutan Peraturan Perundang-undangan", icon:"⚖️",
+    materi: {
+      pengantar: "Dalam sebuah negara hukum, semua peraturan harus tersusun rapi dalam sebuah <b>hierarki</b> (tingkatan). Tata urutan peraturan perundang-undangan memastikan bahwa peraturan yang lebih rendah tidak bertentangan dengan yang lebih tinggi. Di Indonesia, hal ini diatur dalam <b>UU No. 12 Tahun 2011</b>.",
+      bagian: [
+        { judul:"A. Pengertian dan Dasar Hukum", body:`
+          <p><b>Peraturan perundang-undangan</b> adalah peraturan tertulis yang memuat norma hukum yang mengikat secara umum dan dibentuk oleh lembaga negara yang berwenang melalui prosedur yang ditetapkan.</p>
+          <p><b>Dasar hukum:</b></p>
+          <ul>
+            <li><b>UU No. 12 Tahun 2011</b> tentang Pembentukan Peraturan Perundang-undangan.</li>
+            <li><b>UU No. 15 Tahun 2019</b> — perubahan atas UU No. 12/2011.</li>
+            <li><b>Pasal 1 ayat (3) UUD 1945</b> — Indonesia adalah negara hukum.</li>
+          </ul>
+          <p><b>Tujuan tata urutan:</b></p>
+          <ul>
+            <li>Menjamin kepastian hukum di masyarakat.</li>
+            <li>Mencegah tumpang tindih antarperaturan.</li>
+            <li>Menjaga konsistensi sistem hukum nasional.</li>
+            <li>Menjadi pedoman pembentukan peraturan baru.</li>
+          </ul>
+        `},
+        { judul:"B. Hierarki Peraturan Perundang-undangan", body:`
+          <p>Menurut <b>Pasal 7 UU No. 12/2011</b>, jenis dan hierarki peraturan perundang-undangan di Indonesia adalah:</p>
+          <ol>
+            <li><b>UUD NRI Tahun 1945</b> — hukum dasar tertinggi.</li>
+            <li><b>Ketetapan MPR (TAP MPR)</b> — ditetapkan MPR.</li>
+            <li><b>Undang-Undang (UU) / Perppu</b> — dibentuk DPR & Presiden.</li>
+            <li><b>Peraturan Pemerintah (PP)</b> — ditetapkan Presiden untuk menjalankan UU.</li>
+            <li><b>Peraturan Presiden (Perpres)</b> — ditetapkan Presiden.</li>
+            <li><b>Peraturan Daerah (Perda)</b> — Provinsi/Kabupaten/Kota.</li>
+          </ol>
+          <div class="box blue"><b>Perppu</b> = Peraturan Pemerintah Pengganti Undang-Undang. Ditetapkan Presiden dalam keadaan <b>kegentingan yang memaksa</b>. Harus mendapat persetujuan DPR pada masa sidang berikutnya. Jika ditolak, Perppu dicabut.</div>
+          <p><b>Perbedaan UU dan Perppu:</b></p>
+          <ul>
+            <li><b>UU</b> — dibahas dan disetujui DPR terlebih dahulu.</li>
+            <li><b>Perppu</b> — dibuat Presiden tanpa DPR karena keadaan darurat, tetapi harus disetujui DPR kemudian.</li>
+          </ul>
+        `},
+        { judul:"C. Asas-Asas Peraturan Perundang-undangan", body:`
+          <p>Terdapat beberapa asas penting dalam sistem perundang-undangan Indonesia:</p>
+          <p><b>1. Asas Lex Superior Derogat Legi Inferiori</b><br>Peraturan yang lebih tinggi mengalahkan peraturan yang lebih rendah. Contoh: Perda tidak boleh bertentangan dengan UU.<br><i>Kata kunci: "Superior menang".</i></p>
+          <p><b>2. Asas Lex Specialis Derogat Legi Generali</b><br>Peraturan yang bersifat khusus mengalahkan peraturan yang bersifat umum. Contoh: UU Pemberantasan Korupsi mengalahkan KUHP untuk kasus korupsi.<br><i>Kata kunci: "Khusus menang".</i></p>
+          <p><b>3. Asas Lex Posterior Derogat Legi Priori</b><br>Peraturan yang baru mengalahkan peraturan yang lama. Contoh: UU 12/2011 mengalahkan UU 10/2004.<br><i>Kata kunci: "Baru menang".</i></p>
+          <p><b>4. Asas Dapat Dilaksanakan</b><br>Peraturan harus dapat diterapkan dalam praktik, tidak hanya indah di atas kertas.</p>
+          <p><b>5. Asas Keterbukaan</b><br>Masyarakat berhak mengetahui dan memberi masukan atas rancangan peraturan.</p>
+        `},
+        { judul:"D. Proses Pembentukan UU", body:`
+          <p>Menurut UU No. 12/2011, proses pembentukan UU melalui 5 tahap:</p>
+          <ol>
+            <li><b>Perencanaan</b> — RUU masuk dalam Program Legislasi Nasional (Prolegnas).</li>
+            <li><b>Penyusunan</b> — disusun oleh DPR, Presiden, atau DPD sesuai kewenangan.</li>
+            <li><b>Pembahasan</b> — dilakukan 2 tingkat di DPR bersama Presiden.</li>
+            <li><b>Pengesahan</b> — Presiden mengesahkan dan menandatangani RUU dalam <b>30 hari</b>. Jika tidak, RUU <b>sah otomatis</b> menjadi UU.</li>
+            <li><b>Pengundangan</b> — diundangkan dalam <b>Lembaran Negara (LN)</b> dan <b>Tambahan Lembaran Negara (TLN)</b>.</li>
+          </ol>
+          <div class="box"><b>💡 Tahukah kamu?</b> UU yang telah diundangkan baru <b>berlaku mengikat</b>. Asasnya: "<i>Setiap orang dianggap tahu hukum</i>" (fictie hukum). Maka, ketidaktahuan hukum tidak dapat dijadikan alasan pembenar.</div>
+          <p><b>Partisipasi masyarakat:</b> Masyarakat berhak memberikan masukan secara lisan/tertulis dalam pembentukan peraturan, baik melalui rapat dengar pendapat, konsultasi publik, maupun daring.</p>
+        `}
+      ],
+      highlight: "💡 <b>Rangkuman:</b> Hierarki perundang-undangan Indonesia: UUD 1945 → TAP MPR → UU/Perppu → PP → Perpres → Perda. Diatur dalam UU No. 12/2011. Asas penting: Lex Superior, Lex Specialis, Lex Posterior, dan Dapat Dilaksanakan. UU disahkan Presiden dalam 30 hari atau berlaku otomatis."
+    },
+    soal:[
+      { q:"Hierarki peraturan perundang-undangan tertinggi di Indonesia adalah...", o:["UUD 1945","TAP MPR","UU","Perpres"], a:0, e:"UUD NRI 1945 adalah hukum dasar tertinggi." },
+      { q:"UU No. 12 Tahun 2011 mengatur tentang...", o:["Pemilu","Pembentukan Peraturan Perundang-undangan","HAM","Korupsi"], a:1, e:"UU No. 12/2011 tentang Pembentukan Peraturan Perundang-undangan." },
+      { q:"Peraturan yang dibuat Presiden untuk melaksanakan UU disebut...", o:["Perpres","Perda","Perppu","Kepres"], a:0, e:"Peraturan Presiden (Perpres) dibuat untuk menjalankan UU." },
+      { q:"Peraturan Daerah (Perda) ditetapkan oleh...", o:["Gubernur","DPRD dengan persetujuan Kepala Daerah","Menteri","Presiden"], a:1, e:"Perda ditetapkan DPRD dengan persetujuan Kepala Daerah." },
+      { q:"Perppu adalah singkatan dari...", o:["Peraturan Pemerintah Pusat","Peraturan Presiden","Peraturan Pemerintah Pengganti Undang-Undang","Peraturan Pemerintah"], a:2, e:"Perppu = Peraturan Pemerintah Pengganti Undang-Undang." },
+      { q:"Tata urutan perundang-undangan diatur dalam UU No...", o:["10 Tahun 2004","12 Tahun 2011","17 Tahun 2014","22 Tahun 1999"], a:1, e:"UU No. 12 Tahun 2011 tentang Pembentukan Peraturan Perundang-undangan." },
+      { q:"Peraturan Pemerintah ditetapkan oleh...", o:["DPR","Presiden","MPR","MA"], a:1, e:"Peraturan Pemerintah ditetapkan oleh Presiden." },
+      { q:"Asas perundang-undangan yang berarti dapat dilaksanakan adalah...", o:["Lex superior","Lex specialis","Lex posterior","Dapat dilaksanakan"], a:3, e:"Asas dapat dilaksanakan (dapat diterapkan dalam praktik)." },
+      { q:"Peraturan lebih rendah tidak boleh bertentangan dengan yang lebih tinggi merupakan asas...", o:["Lex superior derogat legi inferiori","Lex specialis","Lex posterior","Lex aequo"], a:0, e:"Asas lex superior: peraturan lebih tinggi mengalahkan yang lebih rendah." },
+      { q:"TAP MPR termasuk dalam hierarki perundang-undangan di bawah...", o:["UUD 1945","UU","Perpres","Perda"], a:0, e:"TAP MPR berada tepat di bawah UUD 1945." }
+    ]
+  },
 
   /* ============ SEMESTER 2 ============ */
-  4: { semester:2, bab:"BAB 4", nama:"Bhinneka Tunggal Ika", icon:"🌏", soal:[
-    { q:"Semboyan Bhinneka Tunggal Ika berasal dari kitab...", o:["Negarakertagama","Sutasoma","Ramayana","Mahabharata"], a:1, e:"Berasal dari Kitab Sutasoma karya Mpu Tantular." },
-    { q:"Arti Bhinneka Tunggal Ika adalah...", o:["Berbeda-beda tetapi tetap satu","Satu untuk semua","Bersatu kita kuat","Berbeda itu indah"], a:0, e:"Berbeda-beda tetapi tetap satu jua." },
-    { q:"Bhinneka Tunggal Ika diatur dalam UUD 1945 pasal...", o:["Pasal 35","Pasal 36","Pasal 36A","Pasal 37"], a:2, e:"Pasal 36A: Lambang negara Garuda Pancasila dengan semboyan Bhinneka Tunggal Ika." },
-    { q:"Keberagaman suku bangsa di Indonesia mencapai...", o:["500 suku","1.000 suku","1.340 suku","2.000 suku"], a:2, e:"Indonesia memiliki sekitar 1.340 suku bangsa." },
-    { q:"Sikap menghargai perbedaan agama disebut...", o:["Toleransi","Egois","Diskriminasi","Radikal"], a:0, e:"Toleransi adalah sikap menghargai perbedaan." },
-    { q:"Gotong royong merupakan wujud nilai sila ke...", o:["1","2","3","4"], a:2, e:"Gotong royong mencerminkan sila ke-3 Persatuan Indonesia." },
-    { q:"Bahasa persatuan Indonesia adalah...", o:["Bahasa Jawa","Bahasa Indonesia","Bahasa Melayu","Bahasa Sunda"], a:1, e:"Bahasa Indonesia adalah bahasa persatuan." },
-    { q:"Faktor yang mempersatukan keberagaman Indonesia adalah...", o:["Sumpah Pemuda","Perbedaan","Konflik","Egoisme"], a:0, e:"Sumpah Pemuda 28 Oktober 1928 mempersatukan bangsa." },
-    { q:"Sikap yang harus dihindari dalam keberagaman adalah...", o:["Toleransi","Saling menghormati","Etnosentrisme","Gotong royong"], a:2, e:"Etnosentrisme harus dihindari." },
-    { q:"Keragaman budaya Indonesia merupakan...", o:["Kelemahan bangsa","Kekayaan bangsa","Beban negara","Masalah sosial"], a:1, e:"Keberagaman adalah kekayaan dan kekuatan bangsa." }
-  ]},
+  4: { semester:2, bab:"BAB 4", nama:"Bhinneka Tunggal Ika", icon:"🌏",
+    materi: {
+      pengantar: "Indonesia adalah negara dengan keberagaman luar biasa — ribuan suku, ratusan bahasa, dan beragam agama. Semboyan <b>Bhinneka Tunggal Ika</b> (berbeda-beda tetapi tetap satu) menjadi perekat keberagaman tersebut. Semboyan ini bukan sekadar slogan, tetapi filosofi hidup berbangsa yang telah diwariskan sejak zaman Majapahit.",
+      bagian: [
+        { judul:"A. Sejarah dan Makna Semboyan", body:`
+          <p>Semboyan <b>Bhinneka Tunggal Ika</b> diambil dari <b>Kitab Sutasoma</b> karya <b>Mpu Tantular</b> pada zaman Kerajaan Majapahit (abad ke-14). Kutipannya berbunyi:</p>
+          <div class="box"><i>"Bhinneka tunggal ika tan hana dharma mangrwa"</i><br>Artinya: "Berbeda-beda itu, satu itu, tidak ada hukum yang mendua."</div>
+          <p>Maksudnya, meskipun masyarakat Majapahit saat itu terdiri dari pemeluk agama Hindu dan Buddha, mereka tetap satu dalam kebenaran.</p>
+          <p><b>Perjalanan semboyan menjadi semboyan negara:</b></p>
+          <ul>
+            <li>Tahun 1949 — <b>Moh. Yamin</b> mengusulkan kepada Presiden Soekarno untuk menjadikan Bhinneka Tunggal Ika sebagai semboyan negara.</li>
+            <li>Tahun 1950 — semboyan ini resmi diadopsi pada <b>pita yang dicengkeram kaki Garuda Pancasila</b>.</li>
+            <li>Diatur dalam <b>Pasal 36A UUD 1945</b>.</li>
+          </ul>
+        `},
+        { judul:"B. Dasar Hukum dan Lambang Negara", body:`
+          <p><b>Dasar hukum Bhinneka Tunggal Ika:</b></p>
+          <ul>
+            <li><b>Pasal 36A UUD 1945</b>: "Lambang Negara ialah Garuda Pancasila dengan semboyan Bhinneka Tunggal Ika."</li>
+            <li><b>Peraturan Pemerintah No. 43 Tahun 1958</b> tentang Lambang Negara.</li>
+            <li><b>UU No. 24 Tahun 2009</b> tentang Bendera, Bahasa, dan Lambang Negara.</li>
+          </ul>
+          <p><b>Makna lambang Garuda Pancasila:</b></p>
+          <ul>
+            <li><b>Garuda</b> — burung mitologi melambangkan kekuatan.</li>
+            <li><b>Sayap 17 helai</b> — tanggal 17 kemerdekaan.</li>
+            <li><b>Ekor 8 helai</b> — bulan 8 (Agustus).</li>
+            <li><b>Bulu bawah perisai 19 helai, leher 45 helai</b> — tahun 1945.</li>
+            <li><b>Perisai</b> — 5 simbol sila Pancasila.</li>
+            <li><b>Pita putih</b> — bertuliskan Bhinneka Tunggal Ika.</li>
+          </ul>
+        `},
+        { judul:"C. Bentuk-Bentuk Keberagaman Indonesia", body:`
+          <p>Indonesia memiliki keberagaman yang sangat kaya. Data mencatat:</p>
+          <ul>
+            <li><b>Suku bangsa:</b> ±1.340 suku — terbesar: Jawa, Sunda, Batak, Madura, Betawi, Bugis, Dayak, Papua, dll.</li>
+            <li><b>Bahasa daerah:</b> ±718 bahasa — Jawa, Sunda, Madura, Minang, Bugis, Batak, dll.</li>
+            <li><b>Agama:</b> 6 agama diakui: Islam, Kristen Protestan, Katolik, Hindu, Buddha, Konghucu, ditambah kepercayaan lokal.</li>
+            <li><b>Rumah adat:</b> Gadang (Sumbar), Joglo (Jateng), Tongkonan (Sulsel), Honai (Papua), dll.</li>
+            <li><b>Tarian:</b> Saman (Aceh), Jaipong (Jabar), Kecak (Bali), Piring (Sumbar), Reog (Ponorogo).</li>
+            <li><b>Pakaian adat:</b> Ulos (Batak), Kebaya (Jawa), Sasando (NTT), Baju Bodo (Bugis).</li>
+            <li><b>Makanan khas:</b> Rendang, Soto, Gudeg, Papeda, Kerak Telor, dll.</li>
+          </ul>
+          <div class="box blue"><b>Bhineka di Sekolah:</b> Di kelas kita saja bisa ada teman dari berbagai suku dan agama. Justru itulah kekayaan yang harus kita syukuri dan jaga.</div>
+        `},
+        { judul:"D. Sikap dalam Keberagaman", body:`
+          <p><b>Sikap yang harus dikembangkan (positif):</b></p>
+          <ul>
+            <li><b>Toleransi</b> — menghargai perbedaan agama, suku, dan budaya.</li>
+            <li><b>Gotong royong</b> — bekerja sama tanpa membedakan latar belakang.</li>
+            <li><b>Saling menghormati</b> — menghargai hak orang lain.</li>
+            <li><b>Empati</b> — memahami perasaan orang lain yang berbeda.</li>
+            <li><b>Adil</b> — tidak pilih kasih terhadap kelompok tertentu.</li>
+          </ul>
+          <p><b>Sikap yang harus dihindari (negatif):</b></p>
+          <ul>
+            <li><b>Etnosentrisme</b> — menganggap sukunya paling unggul dibanding suku lain.</li>
+            <li><b>Primordialisme</b> — mengutamakan kelompok sendiri secara berlebihan.</li>
+            <li><b>Diskriminasi</b> — membedakan perlakuan terhadap orang lain.</li>
+            <li><b>Rasisme</b> — merendahkan ras tertentu.</li>
+            <li><b>Intoleransi</b> — tidak menghargai perbedaan keyakinan.</li>
+            <li><b>Chauvinisme</b> — cinta tanah air secara berlebihan dan merendahkan bangsa lain.</li>
+          </ul>
+          <div class="box green"><b>💚 Penerapan di Kehidupan Sehari-hari:</b><br>• Tidak mengganggu teman yang sedang beribadah.<br>• Berteman dengan siapa pun tanpa memandang suku.<br>• Ikut kegiatan gotong royong di lingkungan.<br>• Menghargai hari raya agama lain dengan tidak mengganggu.<br>• Bangga menggunakan produk dalam negeri.</div>
+        `}
+      ],
+      highlight: "💡 <b>Rangkuman:</b> Bhinneka Tunggal Ika berasal dari Kitab Sutasoma karya Mpu Tantular, diatur Pasal 36A UUD 1945. Indonesia memiliki 1.340 suku dan 718 bahasa daerah. Sikap toleransi, gotong royong, dan saling menghargai adalah kunci menjaga keberagaman. Hindari etnosentrisme, primordialisme, dan diskriminasi."
+    },
+    soal:[
+      { q:"Semboyan Bhinneka Tunggal Ika berasal dari kitab...", o:["Negarakertagama","Sutasoma","Ramayana","Mahabharata"], a:1, e:"Berasal dari Kitab Sutasoma karya Mpu Tantular." },
+      { q:"Arti Bhinneka Tunggal Ika adalah...", o:["Berbeda-beda tetapi tetap satu","Satu untuk semua","Bersatu kita kuat","Berbeda itu indah"], a:0, e:"Berbeda-beda tetapi tetap satu jua." },
+      { q:"Bhinneka Tunggal Ika diatur dalam UUD 1945 pasal...", o:["Pasal 35","Pasal 36","Pasal 36A","Pasal 37"], a:2, e:"Pasal 36A: Lambang negara Garuda Pancasila dengan semboyan Bhinneka Tunggal Ika." },
+      { q:"Keberagaman suku bangsa di Indonesia mencapai...", o:["500 suku","1.000 suku","1.340 suku","2.000 suku"], a:2, e:"Indonesia memiliki sekitar 1.340 suku bangsa." },
+      { q:"Sikap menghargai perbedaan agama disebut...", o:["Toleransi","Egois","Diskriminasi","Radikal"], a:0, e:"Toleransi adalah sikap menghargai perbedaan." },
+      { q:"Gotong royong merupakan wujud nilai sila ke...", o:["1","2","3","4"], a:2, e:"Gotong royong mencerminkan sila ke-3 Persatuan Indonesia." },
+      { q:"Bahasa persatuan Indonesia adalah...", o:["Bahasa Jawa","Bahasa Indonesia","Bahasa Melayu","Bahasa Sunda"], a:1, e:"Bahasa Indonesia adalah bahasa persatuan." },
+      { q:"Faktor yang mempersatukan keberagaman Indonesia adalah...", o:["Sumpah Pemuda","Perbedaan","Konflik","Egoisme"], a:0, e:"Sumpah Pemuda 28 Oktober 1928 mempersatukan bangsa." },
+      { q:"Sikap yang harus dihindari dalam keberagaman adalah...", o:["Toleransi","Saling menghormati","Etnosentrisme","Gotong royong"], a:2, e:"Etnosentrisme harus dihindari." },
+      { q:"Keragaman budaya Indonesia merupakan...", o:["Kelemahan bangsa","Kekayaan bangsa","Beban negara","Masalah sosial"], a:1, e:"Keberagaman adalah kekayaan dan kekuatan bangsa." }
+    ]
+  },
 
-  5: { semester:2, bab:"BAB 5", nama:"Harmoni dalam Keberagaman", icon:"🤝", soal:[
-    { q:"Harmoni dalam keberagaman berarti...", o:["Keselarasan dalam perbedaan","Menyeragamkan semua","Menghilangkan perbedaan","Memisahkan diri"], a:0, e:"Harmoni berarti keselarasan hidup dalam perbedaan." },
-    { q:"Sikap yang mendukung harmoni keberagaman adalah...", o:["Primordialisme","Toleransi","Diskriminasi","Rasisme"], a:1, e:"Toleransi mendukung terciptanya harmoni." },
-    { q:"Konflik SARA dapat dicegah dengan cara...", o:["Dialog antarumat","Provokasi","Diskriminasi","Isolasi"], a:0, e:"Dialog antarumat beragama mencegah konflik SARA." },
-    { q:"Contoh harmoni dalam keberagaman di sekolah adalah...", o:["Berteman hanya dengan yang sama suku","Menghargai teman berbeda agama","Menjauhi teman berbeda","Memilih kelompok tertentu"], a:1, e:"Menghargai teman berbeda agama mencerminkan harmoni." },
-    { q:"Gotong royong membersihkan lingkungan mencerminkan...", o:["Individualisme","Harmoni sosial","Konflik","Persaingan"], a:1, e:"Gotong royong menciptakan harmoni sosial." },
-    { q:"Semboyan 'Bersatu Kita Teguh, Bercerai Kita Runtuh' mengajarkan...", o:["Pentingnya persatuan","Pentingnya perpecahan","Pentingnya individu","Pentingnya konflik"], a:0, e:"Persatuan adalah kunci kekuatan bangsa." },
-    { q:"Perilaku yang mencerminkan harmoni keberagaman di masyarakat adalah...", o:["Kerja bakti lintas suku","Tawuran antarwarga","Mengucilkan minoritas","Membuat kelompok eksklusif"], a:0, e:"Kerja bakti lintas suku mempererat persatuan." },
-    { q:"Toleransi beragama diatur dalam UUD 1945 pasal...", o:["Pasal 28E ayat 1","Pasal 30","Pasal 33","Pasal 34"], a:0, e:"Pasal 28E ayat (1) menjamin kebebasan beragama." },
-    { q:"Manfaat harmoni dalam keberagaman adalah...", o:["Terciptanya perdamaian","Timbulnya konflik","Perpecahan bangsa","Ketidakstabilan"], a:0, e:"Harmoni menciptakan perdamaian dan stabilitas." },
-    { q:"Sikap yang perlu dikembangkan untuk menjaga harmoni adalah...", o:["Egoisme","Intoleransi","Saling menghargai","Acuh tak acuh"], a:2, e:"Saling menghargai kunci harmoni." }
-  ]},
+  5: { semester:2, bab:"BAB 5", nama:"Harmoni dalam Keberagaman", icon:"🤝",
+    materi: {
+      pengantar: "Setelah memahami keberagaman, kita perlu mewujudkannya dalam bentuk <b>harmoni</b> — keselarasan hidup dalam perbedaan. Harmoni bukan berarti menghilangkan perbedaan, tetapi mengelolanya menjadi kekuatan bersama. Tanpa harmoni, keberagaman dapat berubah menjadi konflik yang merugikan.",
+      bagian: [
+        { judul:"A. Makna Harmoni dalam Keberagaman", body:`
+          <p><b>Harmoni</b> berasal dari bahasa Yunani <i>harmonia</i> yang berarti keselarasan atau kesesuaian. Dalam konteks keberagaman, harmoni berarti:</p>
+          <ul>
+            <li>Hidup rukun dan damai meskipun berbeda suku, agama, dan budaya.</li>
+            <li>Menghargai perbedaan sebagai kekayaan, bukan ancaman.</li>
+            <li>Bekerja sama tanpa memandang latar belakang.</li>
+          </ul>
+          <p><b>Ciri-ciri masyarakat harmonis:</b></p>
+          <ul>
+            <li>Saling menghormati dan menghargai.</li>
+            <li>Komunikasi terbuka antarwarga.</li>
+            <li>Gotong royong dalam kegiatan bersama.</li>
+            <li>Konflik diselesaikan dengan dialog, bukan kekerasan.</li>
+            <li>Setiap orang merasa aman dan diterima.</li>
+          </ul>
+          <div class="box blue"><b>Analogi:</b> Bayangkan Indonesia sebagai orkestra. Setiap alat musik berbeda suara, tetapi jika dimainkan bersama-sama dengan selaras, akan menghasilkan simfoni yang indah. Itulah harmoni dalam keberagaman.</div>
+        `},
+        { judul:"B. Faktor Pendorong Harmoni", body:`
+          <p>Beberapa faktor yang mendorong terciptanya harmoni dalam keberagaman:</p>
+          <p><b>1. Toleransi</b><br>Sikap menghargai perbedaan keyakinan, suku, dan budaya orang lain. Contoh: tidak mengganggu teman yang beribadah, menghormati hari raya agama lain.</p>
+          <p><b>2. Dialog dan Komunikasi</b><br>Membuka ruang diskusi antarumat beragama dan antarsuku untuk saling memahami. Forum Kerukunan Umat Beragama (FKUB) adalah contoh nyata di Indonesia.</p>
+          <p><b>3. Gotong Royong</b><br>Kerja sama dalam kegiatan masyarakat — kerja bakti, ronda malam, membantu tetangga yang terkena musibah.</p>
+          <p><b>4. Rasa Persatuan</b><br>Kesadaran bahwa kita semua adalah bangsa Indonesia, apa pun sukunya. Sumpah Pemuda 28 Oktober 1928 menjadi tonggak persatuan.</p>
+          <p><b>5. Keadilan Sosial</b><br>Semua warga diperlakukan adil tanpa diskriminasi. Tidak ada yang merasa dianaktirikan.</p>
+          <p><b>6. Pendidikan Multikultural</b><br>Pendidikan yang mengajarkan keberagaman sejak dini, seperti di sekolah.</p>
+        `},
+        { judul:"C. Faktor Penghambat Harmoni", body:`
+          <p>Beberapa faktor yang dapat merusak harmoni dalam keberagaman:</p>
+          <ul>
+            <li><b>Etnosentrisme</b> — menganggap sukunya paling unggul.</li>
+            <li><b>Primordialisme</b> — mengutamakan kelompok sendiri secara berlebihan.</li>
+            <li><b>Diskriminasi</b> — perlakuan tidak adil terhadap kelompok tertentu.</li>
+            <li><b>Rasisme</b> — merendahkan ras lain.</li>
+            <li><b>Intoleransi</b> — tidak menghargai perbedaan keyakinan.</li>
+            <li><b>Provokasi & Hoaks</b> — menyebarkan berita bohong untuk memecah belah.</li>
+            <li><b>Radikalisme</b> — paham ekstrem yang ingin mengubah tatanan dengan kekerasan.</li>
+            <li><b>Kesenjangan Ekonomi</b> — ketimpangan sosial yang menimbulkan kecemburuan.</li>
+          </ul>
+          <div class="box red"><b>⚠️ Dampak Konflik SARA:</b><br>• Korban jiwa dan kerugian materi.<br>• Perpecahan bangsa.<br>• Melemahkan ekonomi.<br>• Citra buruk Indonesia di mata dunia.<br>• Trauma berkepanjangan pada masyarakat.</div>
+        `},
+        { judul:"D. Peran Warga Negara dalam Menjaga Harmoni", body:`
+          <p>Setiap warga negara memiliki peran penting dalam menjaga harmoni keberagaman:</p>
+          <p><b>Di lingkungan sekolah:</b></p>
+          <ul>
+            <li>Berteman dengan siapa pun tanpa memandang suku dan agama.</li>
+            <li>Tidak membully atau mengucilkan teman yang berbeda.</li>
+            <li>Menghormati teman yang sedang beribadah.</li>
+            <li>Ikut kegiatan sekolah yang melibatkan semua siswa.</li>
+          </ul>
+          <p><b>Di lingkungan masyarakat:</b></p>
+          <ul>
+            <li>Mengikuti kerja bakti dan kegiatan RT/RW.</li>
+            <li>Bersikap ramah kepada tetangga yang berbeda latar belakang.</li>
+            <li>Menghormati tetangga yang merayakan hari raya agamanya.</li>
+            <li>Menyelesaikan masalah dengan musyawarah.</li>
+          </ul>
+          <p><b>Di lingkungan bangsa dan negara:</b></p>
+          <ul>
+            <li>Taat hukum dan peraturan.</li>
+            <li>Menolak hoaks dan provokasi yang memecah belah.</li>
+            <li>Menjaga persatuan dan kesatuan NKRI.</li>
+            <li>Menggunakan hak pilih dalam pemilu dengan bijak.</li>
+          </ul>
+          <p><b>Dasar hukum harmoni keberagaman:</b></p>
+          <ul>
+            <li><b>Pasal 28E ayat (1)</b> — kebebasan memeluk agama.</li>
+            <li><b>Pasal 28I ayat (1)</b> — hak beragama tidak dapat dikurangi.</li>
+            <li><b>Pasal 29 ayat (2)</b> — negara menjamin kemerdekaan beragama.</li>
+            <li><b>UU No. 39 Tahun 1999</b> — tentang HAM.</li>
+          </ul>
+          <div class="box green"><b>💚 Tips Menjaga Harmoni:</b><br>1. Biasakan bertegur sapa dengan tetangga.<br>2. Ikut kegiatan sosial di lingkungan.<br>3. Jangan mudah terprovokasi berita bohong.<br>4. Hargai perbedaan sebagai anugerah.<br>5. Selesaikan masalah dengan dialog.</div>
+        `}
+      ],
+      highlight: "💡 <b>Rangkuman:</b> Harmoni adalah keselarasan hidup dalam perbedaan. Faktor pendorong: toleransi, dialog, gotong royong, persatuan, keadilan. Faktor penghambat: etnosentrisme, diskriminasi, intoleransi, radikalisme. Warga negara berperan menjaga harmoni di sekolah, masyarakat, dan negara. Dijamin oleh Pasal 28E dan Pasal 29 UUD 1945."
+    },
+    soal:[
+      { q:"Harmoni dalam keberagaman berarti...", o:["Keselarasan dalam perbedaan","Menyeragamkan semua","Menghilangkan perbedaan","Memisahkan diri"], a:0, e:"Harmoni berarti keselarasan hidup dalam perbedaan." },
+      { q:"Sikap yang mendukung harmoni keberagaman adalah...", o:["Primordialisme","Toleransi","Diskriminasi","Rasisme"], a:1, e:"Toleransi mendukung terciptanya harmoni." },
+      { q:"Konflik SARA dapat dicegah dengan cara...", o:["Dialog antarumat","Provokasi","Diskriminasi","Isolasi"], a:0, e:"Dialog antarumat beragama mencegah konflik SARA." },
+      { q:"Contoh harmoni dalam keberagaman di sekolah adalah...", o:["Berteman hanya dengan yang sama suku","Menghargai teman berbeda agama","Menjauhi teman berbeda","Memilih kelompok tertentu"], a:1, e:"Menghargai teman berbeda agama mencerminkan harmoni." },
+      { q:"Gotong royong membersihkan lingkungan mencerminkan...", o:["Individualisme","Harmoni sosial","Konflik","Persaingan"], a:1, e:"Gotong royong menciptakan harmoni sosial." },
+      { q:"Semboyan 'Bersatu Kita Teguh, Bercerai Kita Runtuh' mengajarkan...", o:["Pentingnya persatuan","Pentingnya perpecahan","Pentingnya individu","Pentingnya konflik"], a:0, e:"Persatuan adalah kunci kekuatan bangsa." },
+      { q:"Perilaku yang mencerminkan harmoni keberagaman di masyarakat adalah...", o:["Kerja bakti lintas suku","Tawuran antarwarga","Mengucilkan minoritas","Membuat kelompok eksklusif"], a:0, e:"Kerja bakti lintas suku mempererat persatuan." },
+      { q:"Toleransi beragama diatur dalam UUD 1945 pasal...", o:["Pasal 28E ayat 1","Pasal 30","Pasal 33","Pasal 34"], a:0, e:"Pasal 28E ayat (1) menjamin kebebasan beragama." },
+      { q:"Manfaat harmoni dalam keberagaman adalah...", o:["Terciptanya perdamaian","Timbulnya konflik","Perpecahan bangsa","Ketidakstabilan"], a:0, e:"Harmoni menciptakan perdamaian dan stabilitas." },
+      { q:"Sikap yang perlu dikembangkan untuk menjaga harmoni adalah...", o:["Egoisme","Intoleransi","Saling menghargai","Acuh tak acuh"], a:2, e:"Saling menghargai kunci harmoni." }
+    ]
+  },
 
-  6: { semester:2, bab:"BAB 6", nama:"Ancaman terhadap Negara & Bela Negara", icon:"🛡️", soal:[
-    { q:"Ancaman yang berasal dari dalam negeri disebut ancaman...", o:["Eksternal","Internal","Global","Regional"], a:1, e:"Ancaman internal berasal dari dalam negeri." },
-    { q:"Sikap bela negara diatur dalam UUD 1945 pasal...", o:["Pasal 27 ayat 3","Pasal 30","Pasal 31","Pasal 33"], a:0, e:"Pasal 27 ayat (3): hak dan kewajiban bela negara." },
-    { q:"Contoh ancaman non-militer adalah...", o:["Invasi","Propaganda & narkoba","Perang","Serangan militer"], a:1, e:"Ancaman non-militer: ideologi, politik, ekonomi, sosial, budaya." },
-    { q:"Bentuk bela negara bagi pelajar adalah...", o:["Belajar giat & taat hukum","Tawuran","Bolos sekolah","Menyebar hoaks"], a:0, e:"Pelajar bela negara dengan belajar giat dan taat hukum." },
-    { q:"Sistem pertahanan Indonesia bersifat...", o:["Semesta","Parsial","Eksklusif","Individu"], a:0, e:"Sistem pertahanan semesta melibatkan seluruh rakyat." },
-    { q:"Komponen utama pertahanan negara adalah...", o:["TNI","Polisi","Satpol PP","Hansip"], a:0, e:"TNI adalah komponen utama pertahanan negara." },
-    { q:"Ancaman terhadap ideologi Pancasila contohnya...", o:["Komunisme","Gotong royong","Musyawarah","Toleransi"], a:0, e:"Komunisme bertentangan dengan Pancasila." },
-    { q:"Pasal 30 UUD 1945 mengatur tentang...", o:["Pertahanan & keamanan negara","Pendidikan","Ekonomi","HAM"], a:0, e:"Pasal 30 mengatur pertahanan dan keamanan negara." },
-    { q:"Wujud cinta tanah air di sekolah adalah...", o:["Upacara bendera","Membuang sampah","Mencontek","Berkelahi"], a:0, e:"Upacara bendera wujud cinta tanah air." },
-    { q:"Sifat ancaman terhadap negara dapat berupa...", o:["Militer & non-militer","Hanya militer","Hanya ekonomi","Hanya sosial"], a:0, e:"Ancaman bisa militer dan non-militer." }
-  ]}
+  6: { semester:2, bab:"BAB 6", nama:"Ancaman terhadap Negara & Bela Negara", icon:"🛡️",
+    materi: {
+      pengantar: "Kemerdekaan Indonesia bukan hadiah, melainkan hasil perjuangan panjang para pahlawan. Maka setiap warga negara berkewajiban menjaganya dari berbagai ancaman. Ancaman bisa datang dari dalam maupun luar negeri, bersifat militer maupun non-militer. Di sinilah pentingnya <b>bela negara</b>.",
+      bagian: [
+        { judul:"A. Jenis-Jenis Ancaman terhadap Negara", body:`
+          <p>Ancaman terhadap negara dapat diklasifikasikan sebagai berikut:</p>
+          <p><b>1. Berdasarkan Asalnya:</b></p>
+          <ul>
+            <li><b>Ancaman Internal</b> — berasal dari dalam negeri. Contoh: separatisme (GAM, OPM), konflik SARA, terorisme, korupsi, radikalisme.</li>
+            <li><b>Ancaman Eksternal</b> — berasal dari luar negeri. Contoh: invasi, spionase, perang, intervensi asing, perang siber.</li>
+          </ul>
+          <p><b>2. Berdasarkan Sifatnya:</b></p>
+          <ul>
+            <li><b>Ancaman Militer</b> — menggunakan kekuatan bersenjata. Contoh: agresi, invasi, sabotase, spionase, terorisme bersenjata, perang.</li>
+            <li><b>Ancaman Non-Militer</b> — tidak menggunakan senjata tetapi berbahaya. Contoh:
+              <ul>
+                <li><b>Ideologi</b>: komunisme, radikalisme, liberalisme ekstrem.</li>
+                <li><b>Politik</b>: provokasi, hoaks, ujaran kebencian.</li>
+                <li><b>Ekonomi</b>: kesenjangan, kemiskinan, ketergantungan impor.</li>
+                <li><b>Sosial-Budaya</b>: pergaulan bebas, narkoba, westernisasi berlebihan.</li>
+                <li><b>Teknologi</b>: kejahatan siber, pencurian data, hoaks digital.</li>
+              </ul>
+            </li>
+          </ul>
+          <div class="box red"><b>⚠️ Perhatian:</b> Ancaman non-militer sering tidak kita sadari. Contoh: narkoba merusak generasi muda, hoaks memecah persatuan, radikalisme mengancam ideologi Pancasila. Semua harus kita cegah bersama.</div>
+        `},
+        { judul:"B. Sistem Pertahanan Negara", body:`
+          <p>Indonesia menganut <b>Sistem Pertahanan Semesta</b>, artinya pertahanan melibatkan <b>seluruh rakyat Indonesia</b>, tidak hanya TNI.</p>
+          <p><b>Tiga komponen pertahanan:</b></p>
+          <ol>
+            <li><b>Komponen Utama</b> — <b>TNI</b> (Angkatan Darat, Laut, Udara) yang siap bertempur.</li>
+            <li><b>Komponen Cadangan</b> — warga negara yang dilatih militer (Komcad). Dibentuk tahun 2019.</li>
+            <li><b>Komponen Pendukung</b> — seluruh rakyat Indonesia yang dapat membantu pertahanan.</li>
+          </ol>
+          <p><b>Dasar hukum:</b></p>
+          <ul>
+            <li><b>Pasal 30 UUD 1945</b> — pertahanan & keamanan negara.</li>
+            <li><b>UU No. 3 Tahun 2002</b> — tentang Pertahanan Negara.</li>
+            <li><b>UU No. 23 Tahun 2019</b> — tentang Pengelolaan Sumber Daya Nasional untuk Pertahanan.</li>
+          </ul>
+          <div class="box blue"><b>Tahukah kamu?</b> Indonesia juga menganut prinsip "<i>pertahanan berlapis</i>" dan "<i>tidak memihak blok militer</i>" dalam politik luar negeri bebas aktif.</div>
+        `},
+        { judul:"C. Bela Negara: Hak dan Kewajiban Warga", body:`
+          <p><b>Bela negara</b> adalah sikap dan perilaku warga negara yang dijiwai kecintaan kepada NKRI, berdasarkan Pancasila dan UUD 1945, dalam menjaga kedaulatan negara.</p>
+          <p><b>Dasar hukum bela negara:</b></p>
+          <ul>
+            <li><b>Pasal 27 ayat (3) UUD 1945</b> — "Setiap warga negara berhak dan wajib ikut serta dalam upaya pembelaan negara."</li>
+            <li><b>Pasal 30 ayat (1) UUD 1945</b> — hak dan kewajiban pertahanan keamanan.</li>
+            <li><b>UU No. 3 Tahun 2002</b> — tentang Pertahanan Negara.</li>
+            <li><b>UU No. 39 Tahun 1999</b> — tentang HAM (kewajiban warga).</li>
+          </ul>
+          <p><b>Nilai-nilai bela negara:</b></p>
+          <ul>
+            <li><b>Cinta Tanah Air</b> — bangga menjadi bangsa Indonesia.</li>
+            <li><b>Kesadaran Berbangsa dan Bernegara</b> — taat hukum, sadar hak & kewajiban.</li>
+            <li><b>Yakin pada Pancasila</b> — menjadikan Pancasila sebagai pandangan hidup.</li>
+            <li><b>Rela Berkorban</b> — untuk bangsa dan negara.</li>
+            <li><b>Kemampuan Awal Bela Negara</b> — fisik, mental, dan intelektual.</li>
+          </ul>
+        `},
+        { judul:"D. Wujud Bela Negara bagi Pelajar", body:`
+          <p>Sebagai pelajar, bela negara tidak berarti harus mengangkat senjata. Ada banyak wujud nyata yang bisa dilakukan:</p>
+          <p><b>Di sekolah:</b></p>
+          <ul>
+            <li>Belajar giat dan berprestasi untuk mengharumkan nama bangsa.</li>
+            <li>Mengikuti upacara bendera dengan khidmat.</li>
+            <li>Taat tata tertib sekolah.</li>
+            <li>Menghormati guru dan teman.</li>
+            <li>Menjaga kebersihan dan fasilitas sekolah.</li>
+          </ul>
+          <p><b>Di rumah dan masyarakat:</b></p>
+          <ul>
+            <li>Membantu orang tua dan tetangga.</li>
+            <li>Menjaga kerukunan tetangga.</li>
+            <li>Ikut kegiatan gotong royong.</li>
+            <li>Menolak narkoba dan miras.</li>
+            <li>Tidak menyebar hoaks di media sosial.</li>
+          </ul>
+          <p><b>Sebagai warga negara:</b></p>
+          <ul>
+            <li>Menggunakan produk dalam negeri.</li>
+            <li>Membayar pajak tepat waktu (bagi yang sudah bekerja).</li>
+            <li>Menjaga nama baik Indonesia di dunia internasional.</li>
+            <li>Mengikuti pemilu dengan bijak.</li>
+            <li>Mendukung program pemerintah yang positif.</li>
+          </ul>
+          <div class="box green"><b>💚 Contoh Bela Negara Non-Fisik:</b><br>• Prestasi akademik di olimpiade internasional.<br>• Menciptakan karya inovatif.<br>• Mengenalkan budaya Indonesia ke dunia.<br>• Menjadi relawan bencana.<br>• Menyebarkan konten positif di media sosial.</div>
+          <div class="box"><b>❌ Bukan Bela Negara:</b><br>• Tawuran antar sekolah.<br>• Menyebar hoaks dan ujaran kebencian.<br>• Merusak fasilitas umum.<br>• Melanggar hukum.<br>• Menjelekkan bangsa sendiri di media sosial.</div>
+        `}
+      ],
+      highlight: "💡 <b>Rangkuman:</b> Ancaman negara terbagi militer (invasi, sabotase) dan non-militer (narkoba, hoaks, radikalisme), serta internal dan eksternal. Indonesia menganut Sistem Pertahanan Semesta (TNI + Komcad + Rakyat). Bela negara diatur Pasal 27 ayat (3) dan Pasal 30 UUD 1945. Pelajar bisa bela negara dengan belajar giat, taat hukum, dan menjaga persatuan."
+    },
+    soal:[
+      { q:"Ancaman yang berasal dari dalam negeri disebut ancaman...", o:["Eksternal","Internal","Global","Regional"], a:1, e:"Ancaman internal berasal dari dalam negeri." },
+      { q:"Sikap bela negara diatur dalam UUD 1945 pasal...", o:["Pasal 27 ayat 3","Pasal 30","Pasal 31","Pasal 33"], a:0, e:"Pasal 27 ayat (3): hak dan kewajiban bela negara." },
+      { q:"Contoh ancaman non-militer adalah...", o:["Invasi","Propaganda & narkoba","Perang","Serangan militer"], a:1, e:"Ancaman non-militer: ideologi, politik, ekonomi, sosial, budaya." },
+      { q:"Bentuk bela negara bagi pelajar adalah...", o:["Belajar giat & taat hukum","Tawuran","Bolos sekolah","Menyebar hoaks"], a:0, e:"Pelajar bela negara dengan belajar giat dan taat hukum." },
+      { q:"Sistem pertahanan Indonesia bersifat...", o:["Semesta","Parsial","Eksklusif","Individu"], a:0, e:"Sistem pertahanan semesta melibatkan seluruh rakyat." },
+      { q:"Komponen utama pertahanan negara adalah...", o:["TNI","Polisi","Satpol PP","Hansip"], a:0, e:"TNI adalah komponen utama pertahanan negara." },
+      { q:"Ancaman terhadap ideologi Pancasila contohnya...", o:["Komunisme","Gotong royong","Musyawarah","Toleransi"], a:0, e:"Komunisme bertentangan dengan Pancasila." },
+      { q:"Pasal 30 UUD 1945 mengatur tentang...", o:["Pertahanan & keamanan negara","Pendidikan","Ekonomi","HAM"], a:0, e:"Pasal 30 mengatur pertahanan dan keamanan negara." },
+      { q:"Wujud cinta tanah air di sekolah adalah...", o:["Upacara bendera","Membuang sampah","Mencontek","Berkelahi"], a:0, e:"Upacara bendera wujud cinta tanah air." },
+      { q:"Sifat ancaman terhadap negara dapat berupa...", o:["Militer & non-militer","Hanya militer","Hanya ekonomi","Hanya sosial"], a:0, e:"Ancaman bisa militer dan non-militer." }
+    ]
+  }
 };
 
 const TOTAL_BADGE = 6;
 
 /* ============================================================
-   STATE + STORAGE (JSON)
+   STATE + STORAGE
    ============================================================ */
-let state = {
-  unlockedLevel: 1,
-  completed: {},
-  badges: 0,
-  currentSemester: 1,
-  currentLevel: 1,
-  currentQ: 0,
-  correctCount: 0,
-  wrongThisLevel: 0,
-  answered: false
-};
+let state = { unlockedLevel:1, completed:{}, badges:0, currentSemester:1, currentLevel:1, currentQ:0, correctCount:0, wrongThisLevel:0, answered:false };
 
-function saveState() {
-  try { localStorage.setItem('pknQuestData', JSON.stringify(state)); } catch(e){}
-}
+function saveState() { try { localStorage.setItem('pknQuestData', JSON.stringify(state)); } catch(e){} }
 function loadState() {
   try {
     const raw = localStorage.getItem('pknQuestData');
@@ -294,63 +778,40 @@ function loadState() {
   } catch(e){}
 }
 
-/* ============================================================
-   NAVIGASI
-   ============================================================ */
 const el = id => document.getElementById(id);
 
 function showScreen(name) {
-  ['semesterScreen','levelScreen','quizScreen','rewardScreen'].forEach(s => {
-    el(s).classList.add('hidden');
-    el(s).classList.remove('show');
+  ['semesterScreen','levelScreen','materiScreen','quizScreen','rewardScreen'].forEach(s => {
+    el(s).classList.add('hidden'); el(s).classList.remove('show');
   });
   el('header').style.display = 'none';
   el('badgePanel').style.display = 'none';
 
-  if (name === 'semester') {
-    el('semesterScreen').classList.remove('hidden');
-  } else if (name === 'level') {
-    el('levelScreen').classList.remove('hidden');
-    el('header').style.display = 'flex';
-    renderLevels();
-  } else if (name === 'quiz') {
-    el('quizScreen').classList.remove('hidden');
-    el('header').style.display = 'flex';
-    el('badgePanel').style.display = 'flex';
-  } else if (name === 'reward') {
-    el('rewardScreen').classList.add('show');
-    el('header').style.display = 'flex';
-    el('badgePanel').style.display = 'flex';
-  }
+  if (name === 'semester') { el('semesterScreen').classList.remove('hidden'); }
+  else if (name === 'level') { el('levelScreen').classList.remove('hidden'); el('header').style.display = 'flex'; renderLevels(); }
+  else if (name === 'materi') { el('materiScreen').classList.remove('hidden'); el('header').style.display = 'flex'; el('badgePanel').style.display = 'flex'; }
+  else if (name === 'quiz') { el('quizScreen').classList.remove('hidden'); el('header').style.display = 'flex'; el('badgePanel').style.display = 'flex'; }
+  else if (name === 'reward') { el('rewardScreen').classList.add('show'); el('header').style.display = 'flex'; el('badgePanel').style.display = 'flex'; }
   renderBadgePanel();
 }
 
-/* ============================================================
-   SEMESTER -> LEVEL
-   ============================================================ */
 el('btnSem1').addEventListener('click', () => selectSemester(1));
 el('btnSem2').addEventListener('click', () => selectSemester(2));
 
 function selectSemester(sem) {
   state.currentSemester = sem;
   el('levelScreenTitle').textContent = 'Semester ' + sem;
-  el('levelScreenSub').textContent = sem === 1
-    ? 'Bab 1 - Bab 3 (Level 1-3)'
-    : 'Bab 4 - Bab 6 (Level 4-6)';
+  el('levelScreenSub').textContent = sem === 1 ? 'Bab 1 - Bab 3 (Level 1-3)' : 'Bab 4 - Bab 6 (Level 4-6)';
   el('headerLevel').textContent = 'Semester ' + sem;
   el('headerSub').textContent = 'Kurikulum Merdeka - Kelas 10';
   showScreen('level');
 }
 
-/* ============================================================
-   RENDER LEVEL LIST
-   ============================================================ */
 function renderLevels() {
   const list = el('levelList');
   list.innerHTML = '';
   const start = state.currentSemester === 1 ? 1 : 4;
   const end = state.currentSemester === 1 ? 3 : 6;
-
   for (let lv = start; lv <= end; lv++) {
     const m = MATERI[lv];
     const done = !!state.completed[lv];
@@ -362,25 +823,63 @@ function renderLevels() {
       <div class="level-info">
         <div class="bab">${m.bab}</div>
         <div class="name">${m.nama}</div>
-        <div class="stars">${done ? '⭐ Selesai • Badge diperoleh' : (locked ? 'Terkunci' : '▶ Mulai Kuis (10 soal)')}</div>
+        <div class="stars">${done ? '⭐ Selesai • Badge diperoleh' : (locked ? 'Terkunci' : '📖 Baca materi & 10 soal kuis')}</div>
       </div>
       <div class="lock-icon">${done ? '✅' : (locked ? '🔒' : '➜')}</div>
     `;
-    if (!locked) card.addEventListener('click', () => startQuiz(lv));
+    if (!locked) card.addEventListener('click', () => openMateri(lv));
     list.appendChild(card);
   }
 }
 
-el('btnBack').addEventListener('click', backToLevels);
+el('btnBack').addEventListener('click', () => { openMateri(state.currentLevel); });
 function backToLevels() {
   el('feedbackOverlay').classList.remove('show');
   stopFlagAnimation();
   showScreen('level');
 }
+el('btnMateriBack').addEventListener('click', backToLevels);
 
-/* ============================================================
-   QUIZ
-   ============================================================ */
+function openMateri(lv) {
+  state.currentLevel = lv;
+  const m = MATERI[lv];
+  el('headerLevel').textContent = 'Level ' + lv;
+  el('headerSub').textContent = m.bab + ' - ' + m.nama;
+  el('materiBadge').textContent = '📖 ' + m.bab;
+
+  const sc = el('materiScroll');
+  const mat = m.materi;
+  let html = `
+    <div class="materi-hero">
+      <div class="icon">${m.icon}</div>
+      <h2>${m.nama}</h2>
+      <div class="sub">${m.bab} • Semester ${m.semester}</div>
+    </div>
+    <div class="materi-tip">
+      <b>🎯 Pengantar:</b> ${mat.pengantar}
+    </div>
+  `;
+  mat.bagian.forEach((b, i) => {
+    html += `
+      <div class="materi-section">
+        <h3><span class="num">${i+1}</span> ${b.judul}</h3>
+        <div class="body">${b.body}</div>
+      </div>
+    `;
+  });
+  html += `
+    <div class="materi-highlight">${mat.highlight}</div>
+    <div style="text-align:center;font-size:11px;color:#888;margin-top:8px;">
+      Baca materi dengan teliti sebelum memulai kuis 👇
+    </div>
+  `;
+  sc.innerHTML = html;
+  sc.scrollTop = 0;
+  showScreen('materi');
+}
+
+el('btnStartQuiz').addEventListener('click', () => { startQuiz(state.currentLevel); });
+
 function startQuiz(lv) {
   state.currentLevel = lv;
   state.currentQ = 0;
@@ -391,6 +890,7 @@ function startQuiz(lv) {
   el('headerSub').textContent = MATERI[lv].bab + ' - ' + MATERI[lv].nama;
   showScreen('quiz');
   renderQuestion();
+  showToast('🎯 Kuis dimulai! 10 soal');
 }
 
 function renderQuestion() {
@@ -423,30 +923,18 @@ function answerQuestion(idx, btn) {
   allBtns.forEach(b => b.disabled = true);
 
   const isCorrect = idx === soal.a;
-  if (isCorrect) {
-    btn.classList.add('correct');
-    state.correctCount++;
-  } else {
-    btn.classList.add('wrong');
-    allBtns[soal.a].classList.add('correct');
-    state.wrongThisLevel++;
-  }
+  if (isCorrect) { btn.classList.add('correct'); state.correctCount++; }
+  else { btn.classList.add('wrong'); allBtns[soal.a].classList.add('correct'); state.wrongThisLevel++; }
 
   setTimeout(() => showFeedback(isCorrect, soal.e), 450);
 }
 
-/* ============================================================
-   FEEDBACK OVERLAY + CANVAS BENDERA
-   ============================================================ */
 const overlay = el('feedbackOverlay');
 const canvas = el('flagCanvas');
 const ctx = canvas.getContext('2d');
 let animId = null, animStart = 0, flagWave = true;
 
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
+function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 window.addEventListener('resize', resizeCanvas);
 
 function showFeedback(correct, explanation) {
@@ -460,7 +948,6 @@ function showFeedback(correct, explanation) {
     : 'Jawaban salah. ' + explanation + ' Kamu harus mengulang kuis ini.';
   el('feedbackBtn').textContent = correct ? 'Lanjut →' : 'Ulangi Kuis 🔁';
   el('feedbackBtn').dataset.correct = correct ? '1' : '0';
-
   flagWave = correct;
   overlay.classList.add('show');
   animStart = performance.now();
@@ -468,25 +955,17 @@ function showFeedback(correct, explanation) {
   drawFlag();
 }
 
-function stopFlagAnimation() {
-  if (animId) { cancelAnimationFrame(animId); animId = null; }
-}
+function stopFlagAnimation() { if (animId) { cancelAnimationFrame(animId); animId = null; } }
 
 function drawFlag() {
   const w = canvas.width, h = canvas.height;
   const t = (performance.now() - animStart) / 1000;
-
   ctx.clearRect(0, 0, w, h);
 
   const grad = ctx.createRadialGradient(w/2, h/2, 50, w/2, h/2, Math.max(w,h)/1.3);
-  if (flagWave) {
-    grad.addColorStop(0, 'rgba(255,215,0,0.18)');
-  } else {
-    grad.addColorStop(0, 'rgba(231,76,60,0.18)');
-  }
+  grad.addColorStop(0, flagWave ? 'rgba(255,215,0,0.18)' : 'rgba(231,76,60,0.18)');
   grad.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h);
 
   const fw = Math.min(w * 0.62, 340);
   const fh = fw * 0.62;
@@ -494,7 +973,6 @@ function drawFlag() {
   const fy = h / 2 - fh / 2 - 40;
   const segs = 40;
   const segW = fw / segs;
-
   const amp = flagWave ? 16 : 0;
   const speed = flagWave ? 3.2 : 0;
 
@@ -502,8 +980,7 @@ function drawFlag() {
   ctx.fillRect(fx - 6, fy - 6, 6, fh + 60);
   ctx.beginPath();
   ctx.arc(fx - 3, fy - 10, 7, 0, Math.PI * 2);
-  ctx.fillStyle = '#ffd700';
-  ctx.fill();
+  ctx.fillStyle = '#ffd700'; ctx.fill();
 
   for (let i = 0; i < segs; i++) {
     const x0 = fx + i * segW;
@@ -513,79 +990,47 @@ function drawFlag() {
     const x2 = x0 + segW + 0.5;
 
     ctx.beginPath();
-    ctx.moveTo(x1, fy + wave1);
-    ctx.lineTo(x2, fy + wave2);
-    ctx.lineTo(x2, fy + fh/2 + wave2);
-    ctx.lineTo(x1, fy + fh/2 + wave1);
-    ctx.closePath();
-    ctx.fillStyle = '#e60000';
-    ctx.fill();
+    ctx.moveTo(x1, fy + wave1); ctx.lineTo(x2, fy + wave2);
+    ctx.lineTo(x2, fy + fh/2 + wave2); ctx.lineTo(x1, fy + fh/2 + wave1);
+    ctx.closePath(); ctx.fillStyle = '#e60000'; ctx.fill();
 
     ctx.beginPath();
-    ctx.moveTo(x1, fy + fh/2 + wave1);
-    ctx.lineTo(x2, fy + fh/2 + wave2);
-    ctx.lineTo(x2, fy + fh + wave2);
-    ctx.lineTo(x1, fy + fh + wave1);
-    ctx.closePath();
-    ctx.fillStyle = '#ffffff';
-    ctx.fill();
+    ctx.moveTo(x1, fy + fh/2 + wave1); ctx.lineTo(x2, fy + fh/2 + wave2);
+    ctx.lineTo(x2, fy + fh + wave2); ctx.lineTo(x1, fy + fh + wave1);
+    ctx.closePath(); ctx.fillStyle = '#ffffff'; ctx.fill();
   }
 
   if (!flagWave) {
     ctx.strokeStyle = 'rgba(200,0,0,0.85)';
-    ctx.lineWidth = 14;
-    ctx.lineCap = 'round';
+    ctx.lineWidth = 14; ctx.lineCap = 'round';
     const cx = fx + fw/2, cy = fy + fh/2;
     const s = fw * 0.28;
     ctx.beginPath();
-    ctx.moveTo(cx - s, cy - s);
-    ctx.lineTo(cx + s, cy + s);
-    ctx.moveTo(cx + s, cy - s);
-    ctx.lineTo(cx - s, cy + s);
+    ctx.moveTo(cx - s, cy - s); ctx.lineTo(cx + s, cy + s);
+    ctx.moveTo(cx + s, cy - s); ctx.lineTo(cx - s, cy + s);
     ctx.stroke();
   }
-
   animId = requestAnimationFrame(drawFlag);
 }
 
-/* ============================================================
-   HANDLE FEEDBACK NEXT
-   ============================================================ */
 el('feedbackBtn').addEventListener('click', handleFeedbackNext);
 function handleFeedbackNext() {
   const correct = el('feedbackBtn').dataset.correct === '1';
   overlay.classList.remove('show');
   stopFlagAnimation();
-
-  if (!correct) {
-    startQuiz(state.currentLevel);
-    showToast('🔁 Ulangi kuis dari awal!');
-    return;
-  }
-
+  if (!correct) { startQuiz(state.currentLevel); showToast('🔁 Ulangi kuis dari awal!'); return; }
   state.currentQ++;
   const m = MATERI[state.currentLevel];
-  if (state.currentQ < m.soal.length) {
-    renderQuestion();
-  } else {
-    finishLevel();
-  }
+  if (state.currentQ < m.soal.length) renderQuestion();
+  else finishLevel();
 }
 
-/* ============================================================
-   FINISH LEVEL -> REWARD BADGE
-   ============================================================ */
 function finishLevel() {
   const lv = state.currentLevel;
   const firstTime = !state.completed[lv];
   state.completed[lv] = true;
-
-  if (firstTime) {
-    state.badges = Math.min(TOTAL_BADGE, state.badges + 1);
-  }
-  if (lv + 1 > state.unlockedLevel && lv + 1 <= TOTAL_BADGE) {
-    state.unlockedLevel = lv + 1;
-  }
+  if (firstTime) state.badges = Math.min(TOTAL_BADGE, state.badges + 1);
+  if (lv + 1 > state.unlockedLevel && lv + 1 <= TOTAL_BADGE) state.unlockedLevel = lv + 1;
   saveState();
 
   el('rewardBadgeIcon').textContent = firstTime ? '🛡️' : '🏅';
@@ -599,17 +1044,10 @@ function finishLevel() {
 }
 
 el('btnRewardNext').addEventListener('click', () => {
-  if (state.currentLevel < 3) {
-    state.currentSemester = 1;
-  } else {
-    state.currentSemester = 2;
-  }
+  state.currentSemester = state.currentLevel < 3 ? 1 : 2;
   showScreen('level');
 });
 
-/* ============================================================
-   BADGE PANEL
-   ============================================================ */
 function renderBadgePanel() {
   const list = el('badgeList');
   list.innerHTML = '';
@@ -622,9 +1060,6 @@ function renderBadgePanel() {
   }
 }
 
-/* ============================================================
-   TOAST
-   ============================================================ */
 function showToast(msg) {
   const t = el('toast');
   t.textContent = msg;
@@ -634,9 +1069,6 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2000);
 }
 
-/* ============================================================
-   INIT
-   ============================================================ */
 loadState();
 showScreen('semester');
 resizeCanvas();
