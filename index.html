@@ -10,10 +10,20 @@
   body { background:linear-gradient(160deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%); color:#fff; display:flex; justify-content:center; }
   #app { width:100%; max-width:480px; min-height:100vh; position:relative; display:flex; flex-direction:column; }
 
-  .header { padding:14px 16px; background:rgba(0,0,0,0.35); backdrop-filter:blur(8px); border-bottom:2px solid rgba(255,215,0,0.3); position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; }
+  .header { padding:14px 16px; background:rgba(0,0,0,0.35); backdrop-filter:blur(8px); border-bottom:2px solid rgba(255,215,0,0.3); position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; gap:10px; }
   .header h1 { font-size:16px; color:#ffd700; letter-spacing:.5px; }
   .header .sub { font-size:10px; color:#aaa; }
   .level-badge { background:linear-gradient(135deg,#ffd700,#ff8c00); color:#000; font-weight:bold; font-size:12px; padding:6px 10px; border-radius:20px; box-shadow:0 2px 8px rgba(255,215,0,.4); }
+
+  /* HOME BUTTON */
+  .btn-home {
+    width:38px; height:38px; border-radius:50%; border:none; cursor:pointer;
+    background:linear-gradient(135deg,#ffd700,#ff8c00); color:#000;
+    font-size:18px; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 3px 10px rgba(255,215,0,.5); flex-shrink:0;
+    transition:transform .15s;
+  }
+  .btn-home:active { transform:scale(0.9); }
 
   .semester-screen { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; gap:20px; }
   .logo-pkn { text-align:center; margin-bottom:8px; }
@@ -28,7 +38,7 @@
   .btn-semester .d { font-size:11px; font-weight:normal; opacity:.85; }
 
   .level-screen { flex:1; padding:16px; display:flex; flex-direction:column; }
-  .level-title { text-align:center; margin:10px 0 20px; }
+  .level-title { text-align:center; margin:10px 0 20px; position:relative; }
   .level-title h2 { color:#ffd700; font-size:19px; }
   .level-title p { color:#aaa; font-size:11px; margin-top:4px; }
   .level-list { display:flex; flex-direction:column; gap:14px; overflow-y:auto; padding-bottom:70px; }
@@ -140,7 +150,8 @@
 <div id="app">
 
   <div class="header" id="header" style="display:none;">
-    <div>
+    <button class="btn-home" id="btnHome" title="Kembali ke Halaman Depan">🏠</button>
+    <div style="flex:1;">
       <h1>🇮🇩 PKN QUEST</h1>
       <div class="sub" id="headerSub">Kurikulum Merdeka - Kelas 10</div>
     </div>
@@ -168,6 +179,9 @@
   </div>
 
   <div class="level-screen hidden" id="levelScreen">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <button class="btn-back" id="btnLevelBack">🏠 Halaman Depan</button>
+    </div>
     <div class="level-title">
       <h2 id="levelScreenTitle">Semester 1</h2>
       <p id="levelScreenSub">Pilih bab untuk memulai kuis</p>
@@ -202,6 +216,7 @@
     <p id="rewardText">Kamu berhasil menyelesaikan bab ini!</p>
     <div class="badge-count" id="badgeCountText">Badge Pancasila: 0/6</div>
     <button class="btn-next" id="btnRewardNext" style="margin-top:10px;">Lanjut Petualangan</button>
+    <button class="btn-back" id="btnRewardHome" style="margin-top:8px;">🏠 Halaman Depan</button>
   </div>
 
   <div class="badge-panel" id="badgePanel" style="display:none;">
@@ -226,11 +241,8 @@
 <script>
 /* ============================================================
    DATA MATERI PKN KELAS 10 KURIKULUM MERDEKA - 2 SEMESTER
-   Materi diperluas: setiap bagian memiliki penjelasan detail,
-   contoh, dan kotak informasi tambahan.
    ============================================================ */
 const MATERI = {
-  /* ============ SEMESTER 1 ============ */
   1: { semester:1, bab:"BAB 1", nama:"Pancasila sebagai Pemersatu Bangsa", icon:"🦅",
     materi: {
       pengantar: "Pancasila adalah <b>dasar negara</b> dan <b>ideologi bangsa</b> Indonesia yang menjadi landasan seluruh kehidupan bermasyarakat, berbangsa, dan bernegara. Sebagai pemersatu, Pancasila mampu menyatukan keberagaman suku, agama, ras, dan budaya di Indonesia. Tanpa Pancasila, bangsa Indonesia yang sangat majemuk ini rentan terpecah-belah.",
@@ -475,7 +487,6 @@ const MATERI = {
     ]
   },
 
-  /* ============ SEMESTER 2 ============ */
   4: { semester:2, bab:"BAB 4", nama:"Bhinneka Tunggal Ika", icon:"🌏",
     materi: {
       pengantar: "Indonesia adalah negara dengan keberagaman luar biasa — ribuan suku, ratusan bahasa, dan beragam agama. Semboyan <b>Bhinneka Tunggal Ika</b> (berbeda-beda tetapi tetap satu) menjadi perekat keberagaman tersebut. Semboyan ini bukan sekadar slogan, tetapi filosofi hidup berbangsa yang telah diwariskan sejak zaman Majapahit.",
@@ -760,9 +771,6 @@ const MATERI = {
 
 const TOTAL_BADGE = 6;
 
-/* ============================================================
-   STATE + STORAGE
-   ============================================================ */
 let state = { unlockedLevel:1, completed:{}, badges:0, currentSemester:1, currentLevel:1, currentQ:0, correctCount:0, wrongThisLevel:0, answered:false };
 
 function saveState() { try { localStorage.setItem('pknQuestData', JSON.stringify(state)); } catch(e){} }
@@ -794,6 +802,22 @@ function showScreen(name) {
   else if (name === 'reward') { el('rewardScreen').classList.add('show'); el('header').style.display = 'flex'; el('badgePanel').style.display = 'flex'; }
   renderBadgePanel();
 }
+
+/* ============ HOME / BACK TO HOME ============ */
+function goHome() {
+  el('feedbackOverlay').classList.remove('show');
+  stopFlagAnimation();
+  showScreen('semester');
+}
+
+el('btnHome').addEventListener('click', () => {
+  if (confirm('Kembali ke halaman depan? Progres kamu tetap tersimpan.')) {
+    goHome();
+  }
+});
+
+el('btnLevelBack').addEventListener('click', goHome);
+el('btnRewardHome').addEventListener('click', goHome);
 
 el('btnSem1').addEventListener('click', () => selectSemester(1));
 el('btnSem2').addEventListener('click', () => selectSemester(2));
